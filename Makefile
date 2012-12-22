@@ -10,6 +10,14 @@ LIB_FILE=$(LIB_DIR)/libtenacious.a
 SOURCE_FILES=$(shell find src -type f -name '*.cpp')
 HEADER_FILES=$(shell find $(INCLUDE_DIR) -type f -name '*.h')
 OBJ_FILES=$(patsubst src/%.cpp,$(OBJ_DIR)/%.o,$(SOURCE_FILES))
+ifeq ($(GCC_MACHINE),avr)
+ifneq ($(MCU),)
+	CXX_OPTS=-mmcu=$(MCU)
+	GCC_MACHINE:=$(shell $(CXX) -dumpmachine)-$(MCU)
+else
+	ERR:=$(error Must set MCU when building for avr targets)
+endif
+endif
 
 # This is where it ends up if you install the libgtest-dev Debian package.
 # If you're not on Debian then you may wish to override this.
