@@ -7,7 +7,7 @@
    configuring device driver classes that make use of GPIOs.
  */
 class IGpioPin {
- public:
+ publiccc:
 
     /**
        Possible values of a pin.
