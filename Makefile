@@ -52,5 +52,8 @@ show_config:
 	@echo Building with $(CXX) $(CXX_OPTS)
 	@echo Will generate library at $(LIB_FILE)
 
-.PHONY: all test show_config
+docs:
+	doxygen
+
+.PHONY: all test show_config docs
 
