@@ -55,5 +55,11 @@ show_config:
 docs:
 	doxygen
 
-.PHONY: all test show_config docs
+# This is here primarily for the benefit of the Travis-CI build,
+# to force a build of some AVR variants of the library as well
+# as run the tests on a native build.
+build_and_test:
+	make GNU_TOOLS_PREFIX=avr- MCU=atmega328p
+	make test
 
+.PHONY: all test show_config docs build_and_test
