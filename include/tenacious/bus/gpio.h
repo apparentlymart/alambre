@@ -1,3 +1,5 @@
+#ifndef TENACIOUS_BUS_GPIO
+#define TENACIOUS_BUS_GPIO
 
 /**
    Represents a particular GPIO pin.
@@ -72,3 +74,4 @@ class IGpioPin {
     // TODO: Interrupts?
 };
 
+#endif
