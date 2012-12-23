@@ -56,7 +56,7 @@ show_config:
 
 docs: $(DOCS_PYTHON_ENV)/bin/sphinx-build
 	doxygen
-	$(DOCS_PYTHON_ENV)/bin/sphinx-build docs/source docs/build
+	$(DOCS_PYTHON_ENV)/bin/sphinx-build -a -E -n docs/source docs/build
 
 $(DOCS_PYTHON_ENV)/bin/sphinx-build: $(DOCS_PYTHON_ENV)
 	$(DOCS_PYTHON_ENV)/bin/pip install docutils sphinx breathe
