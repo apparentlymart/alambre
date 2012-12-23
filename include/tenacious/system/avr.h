@@ -8,7 +8,7 @@
 #include <avr/io.h>
 #include <tenacious/system/avr/gpio.h>
 
-#define TENACIOUS_SYSTEM_AVR_PIN_ACCESSOR(PORTID, PININDEX) static AvrGpioPort##PORTID##Pin<PININDEX> * PORTID##PININDEX
+#define TENACIOUS_SYSTEM_AVR_PIN_ACCESSOR(PORTID, PININDEX) AvrGpioPort##PORTID##Pin<PININDEX> * PORTID##PININDEX
 
 /**
    Provides access to the built-in features of an AVR microcontroller.
@@ -130,6 +130,9 @@ class AvrSystem {
     // of ports any AVR has.
 };
 
-extern AvrSystem avr_system;
+// Provide a global variable to access the AVR peripherals, but since
+// everything we expose is inlined in practice this should be optimized
+// away as unused in the final binary.
+AvrSystem avr_system;
 
 #endif
