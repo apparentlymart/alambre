@@ -10,6 +10,20 @@
 
 #define TENACIOUS_SYSTEM_AVR_PIN_ACCESSOR(PORTID, PININDEX) static AvrGpioPort##PORTID##Pin<PININDEX> * PORTID##PININDEX
 
+/**
+   Provides access to the built-in features of an AVR microcontroller.
+
+   The members of this class will vary depending on which specific
+   microcontroller unit is targeted by the current build.
+
+   The GPIO pins are available as members with the names given in the
+   unit's datasheet. The documentation for this class assumes a
+   microcontroller with only GPIO port B available as an example; other
+   ports will follow the same convention. Do not refer directly to the
+   types of these members since it is considered an implementation
+   detail; instead, use the typeof() operator.
+
+ */
 class AvrSystem {
  public:
     #ifdef PINA0
