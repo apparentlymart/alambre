@@ -18,6 +18,7 @@ else
 	ERR:=$(error Must set MCU when building for avr targets)
 endif
 endif
+DOCS_PYTHON_ENV=docs/pythonenv
 
 # This is where it ends up if you install the libgtest-dev Debian package.
 # If you're not on Debian then you may wish to override this.
@@ -52,8 +53,15 @@ show_config:
 	@echo Building with $(CXX) $(CXX_OPTS)
 	@echo Will generate library at $(LIB_FILE)
 
-docs:
+docs: $(DOCS_PYTHON_ENV)/bin/sphinx-build
 	doxygen
+	$(DOCS_PYTHON_ENV)/bin/sphinx-build docs/source docs/build
+
+$(DOCS_PYTHON_ENV)/bin/sphinx-build: $(DOCS_PYTHON_ENV)
+	$(DOCS_PYTHON_ENV)/bin/pip install docutils sphinx breathe
+
+$(DOCS_PYTHON_ENV):
+	virtualenv $(DOCS_PYTHON_ENV)
 
 # This is here primarily for the benefit of the Travis-CI build,
 # to force a build of some AVR variants of the library as well

@@ -2,3 +2,5 @@ lib/*
 obj/*
 tests.run
 docs/doxygen/*
+docs/build/*
+docs/pythonenv/*
