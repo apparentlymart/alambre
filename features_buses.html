@@ -1,0 +1,340 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Buses &mdash; libtenacious 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/breathe.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="libtenacious 0.1 documentation" href="index.html" />
+    <link rel="up" title="Features" href="features.html" />
+    <link rel="prev" title="Features" href="features.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="features.html" title="Features"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">libtenacious 0.1 documentation</a> &raquo;</li>
+          <li><a href="features.html" accesskey="U">Features</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="buses">
+<h1>Buses<a class="headerlink" href="#buses" title="Permalink to this headline">¶</a></h1>
+<p>In libtenacious terminology, a <em>bus</em> is a mechanism for connecting devices
+to the system. Interfaces are included for a few standard buses that are often
+found in embedded systems. Device drivers will often use one or more bus
+interfaces to interact with the corresponding device.</p>
+<div class="section" id="general-purpose-io-gpio">
+<h2>General Purpose IO (GPIO)<a class="headerlink" href="#general-purpose-io-gpio" title="Permalink to this headline">¶</a></h2>
+<p><em>GPIO</em> refers to the ability to turn on and off specific pins. Microcontrollers
+often have GPIO <em>ports</em> that are collections of pins that are controlled by
+the same byte (or word) in memory. At present there is no standard model for
+GPIO ports, since these vary from system to system and are not often used
+together as a unit, but individual pins are modelled by the
+<tt class="xref cpp cpp-class docutils literal"><span class="pre">IGpioPin</span></tt> interface which is often used by device drivers for
+devices that require control of a single signal.</p>
+<p>Specific implementations of GPIO pins are most often found via <em>system</em>
+objects, which expose the built-in facilities of a given microcontroller or
+embedded system.</p>
+<div class="line-block">
+<div class="line"><em>class</em> <strong>IGpioPin</strong></div>
+</div>
+<blockquote>
+<div><p>Represents a particular GPIO pin. </p>
+<p>On many systems a GPIO pin is part of a GPIO port that consists of 8, 16 or 32 pins. This interface represents only one such pin, and is useful for configuring device driver classes that make use of GPIOs. </p>
+<em>Public Type</em><blockquote>
+<div><p id=""><span id="project0classIGpioPin_1a05d92f138b1f0ea9697aa09cc14ea954"></span><strong>PinValue enum</strong></p>
+<blockquote>
+<div><p>Possible values of a pin. </p>
+<p></p>
+<p><em>Values:</em></p>
+<ul class="breatheenumvalues">
+<li><tt class="first docutils literal"><span class="pre">LOW</span></tt><tt class="docutils literal"> <span class="pre">=</span>  <span class="pre">0</span></tt> - </li>
+<li><tt class="first docutils literal"><span class="pre">HIGH</span></tt><tt class="docutils literal"> <span class="pre">=</span>  <span class="pre">1</span></tt> - </li>
+</ul>
+</div></blockquote>
+<p id=""><span id="project0classIGpioPin_1a6ce919d92b84fdd7e072aa0f67a33a27"></span><strong>PinDirection enum</strong></p>
+<blockquote>
+<div><p>Possible directions of a pin. </p>
+<p></p>
+<p><em>Values:</em></p>
+<ul class="breatheenumvalues">
+<li><tt class="first docutils literal"><span class="pre">INPUT</span></tt><tt class="docutils literal"> <span class="pre">=</span>  <span class="pre">0</span></tt> - </li>
+<li><tt class="first docutils literal"><span class="pre">OUTPUT</span></tt><tt class="docutils literal"> <span class="pre">=</span>  <span class="pre">1</span></tt> - </li>
+</ul>
+</div></blockquote>
+</div></blockquote>
+<em>Public Functions</em><blockquote>
+<div><p id=""><span id="project0classIGpioPin_1a10190b80009a71e5931b1a1b3080305d"></span><div class="line-block">
+<div class="line">void <strong>set</strong>(void)</div>
+</div>
+</p>
+<blockquote>
+<div><p>Set the pin&#8217;s value to HIGH. </p>
+<p>This is only meaningful for pins configured for the OUTPUT direction and may have other hardware-dependent consequences on INPUT pins. </p>
+</div></blockquote>
+<p id=""><span id="project0classIGpioPin_1ac82dd0070c9caa34f3bf5b04c7a1677d"></span><div class="line-block">
+<div class="line">void <strong>clear</strong>(void)</div>
+</div>
+</p>
+<blockquote>
+<div><p>Set the pin&#8217;s value to LOW. </p>
+<p>This is only meaningful for pins configured for the OUTPUT direction and may have other hardware-dependent consequences on INPUT pins. </p>
+</div></blockquote>
+<p id=""><span id="project0classIGpioPin_1ab93357a2163090e4bd35053b668da646"></span><div class="line-block">
+<div class="line">void <strong>write</strong>(<a class="reference internal" href="#project0classIGpioPin_1a05d92f138b1f0ea9697aa09cc14ea954"><em>PinValue</em></a> value)</div>
+</div>
+</p>
+<blockquote>
+<div><p>Write the given value to the pin. </p>
+<p>This is only meaningful for pins configured for the OUTPUT direction and may have other hardware-dependent consequences on INPUT pins. </p>
+</div></blockquote>
+<p id=""><span id="project0classIGpioPin_1a6862d877f1cf81797b55c7f60700cd8a"></span><div class="line-block">
+<div class="line"><a class="reference internal" href="#project0classIGpioPin_1a05d92f138b1f0ea9697aa09cc14ea954"><em>PinValue</em></a> <strong>read</strong>(void)</div>
+</div>
+</p>
+<blockquote>
+<div><p>Determine the current value of the pin. </p>
+<p>For some hardware this may work only for pins configured for the INPUT direction. </p>
+</div></blockquote>
+<p id=""><span id="project0classIGpioPin_1a400c27edb2b906562be8b6d4baae9cad"></span><div class="line-block">
+<div class="line">void <strong>set_direction</strong>(<a class="reference internal" href="#project0classIGpioPin_1a6ce919d92b84fdd7e072aa0f67a33a27"><em>PinDirection</em></a> direction)</div>
+</div>
+</p>
+<blockquote>
+<div><p>Configure the direction of the pin. </p>
+<p>Not all pins are direction-configurable. An implementation of this method will not be provided on such hardware. </p>
+</div></blockquote>
+<p id=""><span id="project0classIGpioPin_1a96170dd98307b1a436694bf61948f042"></span><div class="line-block">
+<div class="line"><a class="reference internal" href="#project0classIGpioPin_1a6ce919d92b84fdd7e072aa0f67a33a27"><em>PinDirection</em></a> <strong>get_direction</strong>(void)</div>
+</div>
+</p>
+<blockquote>
+<div><p>Determine the current direction of the pin. </p>
+<p>On hardware with configurable pin direction this will return the configured pin direction. On systems where pin direction is forced, this will return the forced direction. </p>
+</div></blockquote>
+</div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="serial-peripheral-interface-spi">
+<h2>Serial Peripheral Interface (SPI)<a class="headerlink" href="#serial-peripheral-interface-spi" title="Permalink to this headline">¶</a></h2>
+<p>The <em>Serial Peripheral Interface</em> is a protocol for synchronous data
+communication between a master and one or more slaves. The master is the
+device in control of the transmission rate and in control of which device
+is selected to communicate on the bus at a given time.</p>
+<p>Microcontrollers most often take the &#8220;master&#8221; role on the SPI bus, so most
+SPI implementations implement only this part. One key example where this is
+not true is when one microcontroller is communicating with another via SPI,
+which of course means that one of them must at as the slave.</p>
+<p>For the purposes of this library we separate the concept of the SPI <em>bus</em>,
+the data and clock signals, from the concept of an SPI <em>channel</em>, with which
+we model the master&#8217;s interaction with a particular slave on the bus. When
+the system is acting as a master and communicating with one or more slave
+devices there will generally be one SPI <em>bus</em> and then one SPI <em>channel</em> for
+each slave device on the bus.</p>
+<p>The SPI bus is represented by the interface <tt class="xref cpp cpp-class docutils literal"><span class="pre">ISpiBus</span></tt>. A channel
+is represented by an instance of the wrapper class <tt class="xref cpp cpp-class docutils literal"><span class="pre">SpiChannel</span></tt>,
+which is parameterized by the SPI bus it belongs to and the GPIO pin that
+will act as the <em>slave select</em> signal.</p>
+<p>Finally, there is included a simple software implementation of SPI that
+works in terms of GPIO pins and only supports output in the master role. This
+is implemented in <tt class="xref cpp cpp-class docutils literal"><span class="pre">SoftwareSpiMasterOutputBus</span></tt>. Hardware-specific
+SPI implementations are made available via <em>system</em> objects.</p>
+<div class="line-block">
+<div class="line"><em>class</em> <strong>ISpiBus</strong></div>
+</div>
+<blockquote>
+<div><p>Represents an SPI bus. </p>
+<p><p>The SPI *bus* represents the shared data and clock signals of the bus. A particular device on the bus also has a slave select signal, which is represented by the <a class="reference internal" href="#project0classSpiChannel"><em>SpiChannel</em></a> wrapper class.</p>
+<p>This is a generic interface that could be used for both master and slave SPI roles depending on the selected implementation.</p>
+<p>This interface does not provide a mechanism to control the data rate or specific pulsing behavior of the SPI bus; an implementation may provide a way to customize these details, or they may be fixed. </p>
+</p>
+<em>Public Type</em><blockquote>
+<div><p id=""><span id="project0classISpiBus_1a9aae309fea015209f55d29eac94950db"></span><strong>BitOrder enum</strong></p>
+<blockquote>
+<div><p></p>
+<p></p>
+<p><em>Values:</em></p>
+<ul class="breatheenumvalues">
+<li><tt class="first docutils literal"><span class="pre">LSB_FIRST</span></tt><tt class="docutils literal"> <span class="pre">=</span>  <span class="pre">1</span></tt> - </li>
+<li><tt class="first docutils literal"><span class="pre">MSB_FIRST</span></tt><tt class="docutils literal"> <span class="pre">=</span>  <span class="pre">2</span></tt> - </li>
+</ul>
+</div></blockquote>
+</div></blockquote>
+<em>Public Functions</em><blockquote>
+<div><p id=""><span id="project0classISpiBus_1ab9819ed6be98f6600b9e896ff928b132"></span><div class="line-block">
+<div class="line">void <strong>shift_out</strong>(uint8_t value, <a class="reference internal" href="#project0classISpiBus_1a9aae309fea015209f55d29eac94950db"><em>BitOrder</em></a> order)</div>
+</div>
+</p>
+<blockquote>
+<div><p>Transmit an 8-bit value on the SPI bus in the bit order given. </p>
+<p></p>
+</div></blockquote>
+<p id=""><span id="project0classISpiBus_1ac9896a2df9e6e1838ec04b3ba76d867c"></span><div class="line-block">
+<div class="line">uint8_t <strong>shift_in</strong>(<a class="reference internal" href="#project0classISpiBus_1a9aae309fea015209f55d29eac94950db"><em>BitOrder</em></a> order)</div>
+</div>
+</p>
+<blockquote>
+<div><p>Recieve an 8-bit value on the SPI bus in the bit order given. </p>
+<p>In slave mode this will block until all eight bits have been recieved, with the rate of transmission under the control of the master. </p>
+</div></blockquote>
+</div></blockquote>
+</div></blockquote>
+<div class="line-block">
+<div class="line">template &lt; class SPI_BUS_TYPE, class SELECT_PIN_TYPE &gt;</div>
+<div class="line"><em>class</em> <strong>SpiChannel</strong></div>
+</div>
+<blockquote>
+<div><p>Represents the combination of an SPI master bus and an SPI slave. </p>
+<p><p>Extends the <a class="reference internal" href="#project0classISpiBus"><em>ISpiBus</em></a> interface with additional methods for selecting and deselecting the corresponding device. This can be used to encapsulate the entire configuration for communicating with a given device, leaving a device driver to simply send and recieve bytes.</p>
+<p>There are no checks to make sure that only one device on the bus is selected at a time. This is the caller&#8217;s responsibility. It is good manners for a device driver using an SPI channel to only select its device for the duration of a specific function call, and deselect it before returning control to the caller.</p>
+<p>It doesn&#8217;t make any sense to use this class with an SPI bus acting as a slave, since only the master role can select and deselect devices. </p>
+</p>
+<em>Public Functions</em><blockquote>
+<div><p id=""><span id="project0classSpiChannel_1a50cec5429593f0b89188c886ae55d742"></span><div class="line-block">
+<div class="line"> <strong>SpiChannel</strong>(SPI_BUS_TYPE * spi_bus, SELECT_PIN_TYPE * select_pin)</div>
+</div>
+</p>
+<blockquote>
+<div><p>Create a new channel with the given bus and select pin. </p>
+<p>As a side-effect of the instantiation the pin will be configured as an output and set high to deselect the device. </p>
+</div></blockquote>
+<p id=""><span id="project0classSpiChannel_1aef91865dc3a07b9e4f67a93e1b2040f9"></span><div class="line-block">
+<div class="line">void <strong>shift_out</strong>(uint8_t value, <a class="reference internal" href="#project0classISpiBus_1a9aae309fea015209f55d29eac94950db"><em>ISpiBus::BitOrder</em></a> order)</div>
+</div>
+</p>
+<blockquote>
+<div><p>Transmit an 8-bit value on the SPI bus in the bit order given. </p>
+<p></p>
+</div></blockquote>
+<p id=""><span id="project0classSpiChannel_1af34a43b22f242d8f3fc24b154724b1a0"></span><div class="line-block">
+<div class="line">uint8_t <strong>shift_in</strong>(<a class="reference internal" href="#project0classISpiBus_1a9aae309fea015209f55d29eac94950db"><em>ISpiBus::BitOrder</em></a> order)</div>
+</div>
+</p>
+<blockquote>
+<div><p>Recieve an 8-bit value on the SPI bus in the bit order given. </p>
+<p>In slave mode this will block until all eight bits have been recieved, with the rate of transmission under the control of the master. </p>
+</div></blockquote>
+<p id=""><span id="project0classSpiChannel_1af0644b9a25c88d8f80658ec6ea5a91bc"></span><div class="line-block">
+<div class="line">void <strong>select</strong>()</div>
+</div>
+</p>
+<blockquote>
+<div><p>Activate the remote slave in preparation for sending or recieving data. </p>
+<p>A device driver that calls this method as part of the implementation of one of its operations should always deselect the device before returning from that operation so the caller does not accidentally activate two devices on the bus simultaneously. </p>
+</div></blockquote>
+<p id=""><span id="project0classSpiChannel_1a6d778a30e692916f74248b753abc5432"></span><div class="line-block">
+<div class="line">void <strong>deselect</strong>()</div>
+</div>
+</p>
+<blockquote>
+<div><p>Deactvate the remote device. </p>
+<p>For many devices this also serves to signal that a (possibly multi-byte) transmission is complete. </p>
+</div></blockquote>
+</div></blockquote>
+</div></blockquote>
+<div class="line-block">
+<div class="line">template &lt; class OUTPUT_PIN_TYPE, class CLOCK_PIN_TYPE &gt;</div>
+<div class="line"><em>class</em> <strong>SoftwareSpiMasterOutputBus</strong></div>
+</div>
+<blockquote>
+<div><p>A simple implementation of an SPI master in terms of a pair of GPIO pins. </p>
+<p><p>This implementation only supports transmission of data. The shift_in method is not implemented.</p>
+<p>This class builds an SPI bus in terms of the GPIO bus. Some systems may provide alternative implementations of SPI implemented within the microcontroller itself, but this implementation can in theory work anywhere two GPIO pins are available.</p>
+<p>This implementation is only able to operate in SPI master mode, and it will transmit as fast as the underlying system can execute the loop over the bits. On faster systems the transmission rate may be too fast for some devices. </p>
+</p>
+</div></blockquote>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Buses</a><ul>
+<li><a class="reference internal" href="#general-purpose-io-gpio">General Purpose IO (GPIO)</a></li>
+<li><a class="reference internal" href="#serial-peripheral-interface-spi">Serial Peripheral Interface (SPI)</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="features.html"
+                        title="previous chapter">Features</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/features_buses.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="features.html" title="Features"
+             >previous</a> |</li>
+        <li><a href="index.html">libtenacious 0.1 documentation</a> &raquo;</li>
+          <li><a href="features.html" >Features</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, Martin Atkins.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,257 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Introduction &mdash; libtenacious 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/breathe.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="libtenacious 0.1 documentation" href="index.html" />
+    <link rel="prev" title="libtenacious" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="index.html" title="libtenacious"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">libtenacious 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="introduction">
+<h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
+<p>libtenacious is a C++ library for microcontrollers and other embedded systems.
+Its main goal is providing a hardware abstraction allowing drivers to be
+written for a variety of interesting devices and then used across all
+supported platforms. For example, it should be possible to write a driver
+for an Shift Register that speaks SPI and use it with a variety of different
+SPI implementations without modification.</p>
+<p>This is achieved by defining standard interfaces for standard buses and then
+providing multiple compatible implementations of these interfaces. On top
+of this we can also provide device-agnostic interfaces for functionality
+provided by different devices so that the application developer can focus
+on the unique functionality of their application rather than the
+low-level details of the particular hardware they have.</p>
+<p>All of this must of course be achieved without considerable code or memory
+bloat so that it can be readily used in code running on microcontrollers.</p>
+<div class="section" id="supported-platforms">
+<h2>Supported Platforms<a class="headerlink" href="#supported-platforms" title="Permalink to this headline">¶</a></h2>
+<p>The primary target at this time is AVR microcontrollers. This is likely to
+expand to other platforms once the AVR support is fleshed out a bit.
+In principle it should be possible to target any platform supported by
+GCC. Currently no effort is being made to support other C++ compilers,
+since G++ provides some language extensions that are convenient for
+the compile-time wiring techniques this library uses.</p>
+<p>The non-hardware-specific parts of the library can also target a Linux
+system to enable unit testing.</p>
+</div>
+<div class="section" id="compile-time-wiring-with-c-templates">
+<h2>Compile-time Wiring with C++ Templates<a class="headerlink" href="#compile-time-wiring-with-c-templates" title="Permalink to this headline">¶</a></h2>
+<p>The usual way to compose objects in C++ is to use run-time polymorphism via
+virtual methods. This allows the precise type of an object to be determined
+at runtime, which makes for a flexible program but has a penalty at runtime
+and prevents certain compiler optimizations that could be performed if
+method calls are bound at compile time.</p>
+<p>Since embedded systems do not usually support runtime re-configuration of
+wiring (you don&#8217;t suddenly switch your LED from GPIO pin 1 to pin 2 while
+the system is running), this library uses C++ Templates as a technique to
+allow composition of objects at compile time. This allows more complete
+program optimization, but does require some additional complexity in the
+initialization code.</p>
+<p>The general pattern is that any class that makes use of an interface must
+be declared as a template that is parameterized by the concrete implementation
+of that interface. For example, the interface <tt class="docutils literal"><span class="pre">IGpioPin</span></tt> describes the
+generic functionality of a general-purpose IO pin, and this can be used
+in the driver for a device that requires two GPIO pins:</p>
+<div class="highlight-cpp"><div class="highlight"><pre><span class="k">template</span> <span class="o">&lt;</span><span class="k">class</span> <span class="nc">OUTPUT_PIN_TYPE</span><span class="p">,</span> <span class="k">class</span> <span class="nc">CLOCK_PIN_TYPE</span><span class="o">&gt;</span>
+<span class="k">class</span> <span class="nc">SomeDevice</span> <span class="p">{</span>
+  <span class="k">public</span><span class="o">:</span>
+    <span class="n">OUTPUT_PIN_TYPE</span> <span class="o">*</span><span class="n">output_pin</span><span class="p">;</span>
+    <span class="n">CLOCK_PIN_TYPE</span> <span class="o">*</span><span class="n">clock_pin</span><span class="p">;</span>
+
+    <span class="n">SomeDevice</span><span class="p">(</span><span class="n">OUTPUT_PIN_TYPE</span> <span class="o">*</span><span class="n">output_pin</span><span class="p">,</span> <span class="n">CLOCK_PIN_TYPE</span> <span class="o">*</span><span class="n">clock_pin</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">this</span><span class="o">-&gt;</span><span class="n">output_pin</span> <span class="o">=</span> <span class="n">output_pin</span><span class="p">;</span>
+        <span class="k">this</span><span class="o">-&gt;</span><span class="n">clock_pin</span> <span class="o">=</span> <span class="n">clock_pin</span><span class="p">;</span>
+        <span class="n">output_pin</span><span class="o">-&gt;</span><span class="n">set_direction</span><span class="p">(</span><span class="n">IGpioPin</span><span class="o">::</span><span class="n">OUTPUT</span><span class="p">);</span>
+        <span class="n">clock_pin</span><span class="o">-&gt;</span><span class="n">set_direction</span><span class="p">(</span><span class="n">IGpioPin</span><span class="o">::</span><span class="n">OUTPUT</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="kt">void</span> <span class="n">do_something</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">this</span><span class="o">-&gt;</span><span class="n">output_pin</span><span class="o">-&gt;</span><span class="n">set</span><span class="p">();</span>
+        <span class="k">this</span><span class="o">-&gt;</span><span class="n">clock_pin</span><span class="o">-&gt;</span><span class="n">set</span><span class="p">();</span>
+        <span class="k">this</span><span class="o">-&gt;</span><span class="n">clock_pin</span><span class="o">-&gt;</span><span class="n">clear</span><span class="p">();</span>
+        <span class="k">this</span><span class="o">-&gt;</span><span class="n">output_pin</span><span class="o">-&gt;</span><span class="n">clear</span><span class="p">();</span>
+        <span class="k">this</span><span class="o">-&gt;</span><span class="n">clock_pin</span><span class="o">-&gt;</span><span class="n">set</span><span class="p">();</span>
+        <span class="k">this</span><span class="o">-&gt;</span><span class="n">clock_pin</span><span class="o">-&gt;</span><span class="n">clear</span><span class="p">();</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>This can be &#8220;wired up&#8221; to a pair of GPIO pins on an AVR by passing the types
+of the AVR pins as part of the declaration:</p>
+<div class="highlight-cpp"><div class="highlight"><pre><span class="cp">#include &lt;tenacious/system/avr.h&gt;</span>
+
+<span class="n">SomeDevice</span><span class="o">&lt;</span><span class="n">typeof</span><span class="p">(</span><span class="o">*</span><span class="n">avr_system</span><span class="p">.</span><span class="n">B1</span><span class="p">),</span> <span class="n">typeof</span><span class="p">(</span><span class="o">*</span><span class="n">avr_system</span><span class="p">.</span><span class="n">B2</span><span class="p">)</span><span class="o">&gt;</span>
+    <span class="n">my_device</span><span class="p">(</span><span class="n">avr_system</span><span class="p">.</span><span class="n">B1</span><span class="p">,</span> <span class="n">avr_system</span><span class="p">.</span><span class="n">B2</span><span class="p">);</span>
+
+<span class="kt">int</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">my_device</span><span class="p">.</span><span class="n">do_something</span><span class="p">();</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>In most cases it&#8217;s best to use the <tt class="docutils literal"><span class="pre">typeof</span></tt> operator to automatically
+insert the correct types, since this allows the given variables to have
+their types changed in future without requiring changes to every use
+of those variables.</p>
+<p>The extra type declarations in the declaration of <tt class="docutils literal"><span class="pre">my_device</span></tt> allow the
+compiler to see that AVR GPIO pins are being used and it can then generate
+the optimal code to access these pins: a single machine instruction for
+each call to <tt class="docutils literal"><span class="pre">set</span></tt> or <tt class="docutils literal"><span class="pre">clear</span></tt>:</p>
+<div class="highlight-cpp-objdump"><div class="highlight"><pre><span class="mh">00000000</span> <span class="p">&lt;</span><span class="nf">main</span><span class="p">&gt;:</span>
+   <span class="mi">0</span><span class="o">:</span>    <span class="mi">29</span> <span class="mi">9</span><span class="n">a</span>       <span class="n">sbi</span>     <span class="mh">0x05</span><span class="p">,</span> <span class="mi">1</span> <span class="p">;</span> <span class="mi">5</span>
+   <span class="mi">2</span><span class="o">:</span>    <span class="mi">2</span><span class="n">a</span> <span class="mi">9</span><span class="n">a</span>       <span class="n">sbi</span>     <span class="mh">0x05</span><span class="p">,</span> <span class="mi">2</span> <span class="p">;</span> <span class="mi">5</span>
+   <span class="mi">4</span><span class="o">:</span>    <span class="mi">2</span><span class="n">a</span> <span class="mi">98</span>       <span class="n">cbi</span>     <span class="mh">0x05</span><span class="p">,</span> <span class="mi">2</span> <span class="p">;</span> <span class="mi">5</span>
+   <span class="mi">6</span><span class="o">:</span>    <span class="mi">29</span> <span class="mi">98</span>       <span class="n">cbi</span>     <span class="mh">0x05</span><span class="p">,</span> <span class="mi">1</span> <span class="p">;</span> <span class="mi">5</span>
+   <span class="mi">8</span><span class="o">:</span>    <span class="mi">2</span><span class="n">a</span> <span class="mi">9</span><span class="n">a</span>       <span class="n">sbi</span>     <span class="mh">0x05</span><span class="p">,</span> <span class="mi">2</span> <span class="p">;</span> <span class="mi">5</span>
+   <span class="nl">a:</span>    <span class="mi">2</span><span class="n">a</span> <span class="mi">98</span>       <span class="n">cbi</span>     <span class="mh">0x05</span><span class="p">,</span> <span class="mi">2</span> <span class="p">;</span> <span class="mi">5</span>
+   <span class="nl">c:</span>    <span class="mi">80</span> <span class="n">e0</span>       <span class="n">ldi</span>     <span class="n">r24</span><span class="p">,</span> <span class="mh">0x00</span>       <span class="p">;</span> <span class="mi">0</span>
+   <span class="nl">e:</span>    <span class="mi">90</span> <span class="n">e0</span>       <span class="n">ldi</span>     <span class="n">r25</span><span class="p">,</span> <span class="mh">0x00</span>       <span class="p">;</span> <span class="mi">0</span>
+  <span class="mi">10</span><span class="o">:</span>    <span class="mi">08</span> <span class="mi">95</span>       <span class="n">ret</span>
+</pre></div>
+</div>
+<p>This template-based wiring technique does have a drawback to be aware of:
+each unique set of types used in the template will cause a new copy of
+the <tt class="docutils literal"><span class="pre">SomeDevice</span></tt> class to be generated, growing the size of the resulting
+binary. In most cases this isn&#8217;t a big deal since systems often have only
+one instance of each kind of device. If this assumption isn&#8217;t true for your
+application you may wish to use more traditional virtual methods instead.</p>
+</div>
+<div class="section" id="library-architecture">
+<h2>Library Architecture<a class="headerlink" href="#library-architecture" title="Permalink to this headline">¶</a></h2>
+<p>Since this library aims to create a sense of architecture in embedded systems,
+it&#8217;s worth spending a little time describing the intended architecture.</p>
+<p>Embedded systems most often consist of a microcontroller and a set of other
+components which are connected to the microcontroller via some kind of bus.</p>
+<p>This leads to the following concerns that this library seeks to separate:</p>
+<ul class="simple">
+<li>The <em>system</em> is the device on which the program is running. It provides
+access to the capabilities of the device. For example, the <em>AVR system</em>
+provides convenient access to the GPIO pins, SPI bus and I2C bus of
+the AVR the code is running on.</li>
+<li>A <em>device</em> is some kind of equipment connected to the system. Examples of
+devices include shift registers, LCD screens, keypads, real-time clocks,
+and so forth.</li>
+<li>A <em>bus</em> is a mechanism by which devices connect to the system. Common
+examples of buses are plain old GPIO, SPI, I2C and UART. Some buses are
+built in to the system in use. Some buses are implemented in terms of
+other buses, such as a software (&#8220;bit-banging&#8221;) implementation of SPI written
+in terms of a GPIO bus. Some buses are provided by external devices that
+are themselves connected via a bus, such as GPIO pins on an external
+shift register connected to the microcontroller with SPI.</li>
+<li>A <em>capability</em> is some kind of common purpose provided by many different
+devices. For example, a graphical LCD and an LED matrix both provide the
+capability to draw 2D graphics, and a GPS reciever and a real-time clock
+IC can both tell you the current time.</li>
+</ul>
+<p>The most important set of abstractions in this library are those of the
+standard buses, because these in turn allow a device driver to be implemented
+such that it can run on lots of different systems without modification.
+However, capabilities are also interesting to allow an application developer
+to separate the concerns of application behavior (e.g. determining the
+time and showing it on a screen) from the specifics of how that is achieved
+in the underlying hardware (e.g. reading the time from a particular real time
+clock IC and showing it on an array of four seven-segment LED
+displays using a particular LED display driver IC) so that code can more
+easily be re-used between different creations.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Introduction</a><ul>
+<li><a class="reference internal" href="#supported-platforms">Supported Platforms</a></li>
+<li><a class="reference internal" href="#compile-time-wiring-with-c-templates">Compile-time Wiring with C++ Templates</a></li>
+<li><a class="reference internal" href="#library-architecture">Library Architecture</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">libtenacious</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/intro.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="index.html" title="libtenacious"
+             >previous</a> |</li>
+        <li><a href="index.html">libtenacious 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, Martin Atkins.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>
