@@ -7,6 +7,7 @@
 
 #include <avr/io.h>
 #include <tenacious/system/avr/gpio.h>
+#include <tenacious/system/avr/spi.h>
 
 #define TENACIOUS_SYSTEM_AVR_PIN_ACCESSOR(PORTID, PININDEX) AvrGpioPort##PORTID##Pin<PININDEX> * PORTID##PININDEX
 
@@ -128,6 +129,12 @@ class AvrSystem {
 
     // TODO: More ports, so we have enough for the maximum number
     // of ports any AVR has.
+
+    // Does this mcu support SPI?
+    #ifdef SPSR
+    AvrSpiBus *spi_bus;
+    #endif
+
 };
 
 // Provide a global variable to access the AVR peripherals, but since
