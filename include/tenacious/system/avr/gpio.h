@@ -16,7 +16,7 @@
 // way to do it but it's a start for now.
 
 #define PINCLASS(PORTID) \
-    template <char PIN> class AvrGpioPort##PORTID##Pin : IGpioPin {\
+    template <char PIN> class AvrGpioPort##PORTID##Pin : public IGpioPin {\
       public:\
         inline void set(void) {\
             PORT##PORTID |= (1 << PIN);\
