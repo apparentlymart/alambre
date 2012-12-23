@@ -32,6 +32,14 @@
                 this->clear();\
             }\
         }\
+        void set_direction(const IGpioPin::PinDirection direction) {\
+            if (direction == IGpioPin::INPUT) {\
+                DDR##PORTID &= ~(1 << PIN);\
+            }\
+            else {\
+                DDR##PORTID |= (1 << PIN);\
+            }\
+        }\
     }
 
 #ifdef PORTA
