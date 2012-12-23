@@ -41,7 +41,7 @@ $(LIB_DIR):
 	[ -d $(LIB_DIR) ] || mkdir -p $(LIB_DIR)
 
 tests.run: tests/*.cpp $(LIB_FILE)
-	@g++ $(CXX_OPTS) -I$(GTEST_ROOT) -Iinclude tests/*.cpp $(GTEST_ROOT)/src/gtest-all.cc $(GTEST_ROOT)/src/gtest_main.cc -lpthread $(LIB_FILE) -o tests.run
+	@g++ $(CXX_OPTS) -I$(GTEST_ROOT) -Itests -Iinclude tests/*.cpp $(GTEST_ROOT)/src/gtest-all.cc $(GTEST_ROOT)/src/gtest_main.cc -lpthread -lgmock $(LIB_FILE) -o tests.run
 
 test: tests/* $(LIB_FILE) tests.run
 	@./tests.run
