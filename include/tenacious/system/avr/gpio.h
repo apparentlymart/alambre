@@ -15,7 +15,7 @@
 // This is really, really gross and I'd like to think there's a better
 // way to do it but it's a start for now.
 
-#define PINCLASS(PORTID) \
+#define PINCLASS(PORTID) /** GPIO Implementation for pins on AVR port PORTID. This is an implementation detail of the AVR GPIO implementation. */ \
     template <char PIN> class AvrGpioPort##PORTID##Pin : public IGpioPin {\
       public:\
         inline void set(void) {\
