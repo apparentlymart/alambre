@@ -27,6 +27,7 @@ GTEST_ROOT=/usr/src/gtest
 all: $(LIB_DIR)/libtenacious.a
 
 $(OBJ_DIR)/%.o: src/%.cpp $(OBJ_DIR) $(HEADER_FILES)
+	@mkdir -p $(@D)
 	$(CXX) -I$(INCLUDE_DIR) -O3 $(CXX_OPTS) -c $< -o $@
 
 $(LIB_FILE)/: $(OBJ_FILES) $(LIB_DIR)
