@@ -74,4 +74,43 @@ class IGpioPin {
     // TODO: Interrupts?
 };
 
+/**
+   A fake GPIO pin implementation.
+
+   This is an implementation of the GPIO pin interface that isn't actually
+   connected to any GPIO peripheral, but instead just persists its state
+   in an instance variable.
+
+   It's not really useful for anything real but it might be useful for writing
+   unit tests, or placating an interface that wants a GPIO pin that it doesn't
+   really need.
+ */
+class FakeGpioPin : IGpioPin {
+    IGpioPin::PinValue value;
+    IGpioPin::PinDirection direction;
+
+  public:
+
+    inline void set(void) {
+        this->value = IGpioPin::HIGH;
+    }
+    inline void clear(void) {
+        this->value = IGpioPin::HIGH;
+    }
+    inline void write(IGpioPin::PinValue value) {
+        this->value = value;
+    }
+    inline IGpioPin::PinValue read(void) {
+        return this->value;
+    }
+
+    inline void set_direction(IGpioPin::PinDirection direction) {
+        this->direction = direction;
+    }
+    inline IGpioPin::PinDirection get_direction(void) {
+        return this->direction;
+    }
+
+};
+
 #endif
