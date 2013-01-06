@@ -166,5 +166,86 @@ clock IC and showing it on an array of four seven-segment LED
 displays using a particular LED display driver IC) so that code can more
 easily be re-used between different creations.
 
+Asynchronous Event Handling
+---------------------------
 
+Embedded systems often make extensive use of interrupts for asynchronous event
+notifications, but interrupt support is very inconsistent between systems and
+so this library cannot easily hide system-specific details for event handling.
 
+However, the most important thing is to separate the detection of the event
+(which is often done by the hardware itself) from the action taken in response
+to that event (which is often the responsibility of a specific device driver).
+We achieve this through a design pattern rather than any specific library
+feature.
+
+This pattern is most easily explained via an example. Imagine a hypothetical
+device driver that responds to changes of value a GPIO input pin. The GPIO pin
+interface itself does not provide a mechanism to request notifications because
+the details vary so much between systems, but the device driver itself can
+provide a method that can be called to notify it of the state change, like
+this:
+
+.. code-block:: cpp
+
+    template <class INPUT_PIN_TYPE>
+    class SomeDevice {
+     public:
+       INPUT_PIN_TYPE *input_pin;
+
+       SomeDevice(INPUT_PIN_TYPE *input_pin) {
+           this->input_pin = input_pin;
+           input_pin->set_direction(IGpioPin::INPUT);
+       }
+
+       inline void notify_input_pin_change() {
+           IGpioPin::PinValue value = this->input_pin->read();
+           // ... and then do something with the value
+       }
+    };
+
+It is then the responsibility of the system-specific wiring code to connect
+whatever event or interrupt signals the input pin change to the notify function.
+For example, on an AVR:
+
+.. code-block:: cpp
+
+   #include <tenacious/system/avr.h>
+
+   SomeDevice<typeof(*avr_system.B1)>
+       my_device(avr_system.B1);
+   // Ideally the AVR system library would provide a less ugly way to wire this,
+   // but this is just an example.
+   ISR(INT0_vect) {
+       my_device.notify_input_pin_change();
+   }
+
+The rules for this pattern are as follows:
+
+* The documentation for a class that represents a device that emits an event
+  must describe how to wire the event up to an event handler, and will ideally
+  provide a convenient way to do so in one line of declaration code to avoid
+  creating lots of noise in system-specific wiring code.
+
+* A class that consumes an event must provide a method whose name begins with
+  `notify_` and continues with a description of the intended event, as in
+  the example above, and describe in the documentation of that method in
+  what situations the method should be called.
+
+* The notify method must be `void` and must take no parameters.
+
+* The notify method should be declared as `inline` to increase the likelihood
+  that the compiler will be able to embed its implementation directly into
+  an interrupt service routine. This is particularly beneficial for AVR targets
+  because avr-gcc can generate smaller code for an ISR that does not call any
+  other functions.
+
+* Likewise, the notify method should avoid calling any other functions where
+  possible.
+
+* The notify method should be as short as possible and should ideally mutate
+  state only inside the instance the method is called on.
+
+* Any variables that can be modified by the notify method must be declared
+  `volatile` to let the compiler know they can be modified by asynchronous code,
+  and care must be taken when mutating values that cannot be updated atomically.
