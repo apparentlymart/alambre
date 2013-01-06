@@ -27,6 +27,7 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="top" title="libtenacious 0.1 documentation" href="index.html" />
+    <link rel="next" title="Features" href="features.html" />
     <link rel="prev" title="libtenacious" href="index.html" /> 
   </head>
   <body>
@@ -36,6 +37,9 @@
         <li class="right" style="margin-right: 10px">
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="features.html" title="Features"
+             accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="index.html" title="libtenacious"
              accesskey="P">previous</a> |</li>
@@ -194,6 +198,78 @@ clock IC and showing it on an array of four seven-segment LED
 displays using a particular LED display driver IC) so that code can more
 easily be re-used between different creations.</p>
 </div>
+<div class="section" id="asynchronous-event-handling">
+<h2>Asynchronous Event Handling<a class="headerlink" href="#asynchronous-event-handling" title="Permalink to this headline">¶</a></h2>
+<p>Embedded systems often make extensive use of interrupts for asynchronous event
+notifications, but interrupt support is very inconsistent between systems and
+so this library cannot easily hide system-specific details for event handling.</p>
+<p>However, the most important thing is to separate the detection of the event
+(which is often done by the hardware itself) from the action taken in response
+to that event (which is often the responsibility of a specific device driver).
+We achieve this through a design pattern rather than any specific library
+feature.</p>
+<p>This pattern is most easily explained via an example. Imagine a hypothetical
+device driver that responds to changes of value a GPIO input pin. The GPIO pin
+interface itself does not provide a mechanism to request notifications because
+the details vary so much between systems, but the device driver itself can
+provide a method that can be called to notify it of the state change, like
+this:</p>
+<div class="highlight-cpp"><div class="highlight"><pre><span class="k">template</span> <span class="o">&lt;</span><span class="k">class</span> <span class="nc">INPUT_PIN_TYPE</span><span class="o">&gt;</span>
+<span class="k">class</span> <span class="nc">SomeDevice</span> <span class="p">{</span>
+ <span class="k">public</span><span class="o">:</span>
+   <span class="n">INPUT_PIN_TYPE</span> <span class="o">*</span><span class="n">input_pin</span><span class="p">;</span>
+
+   <span class="n">SomeDevice</span><span class="p">(</span><span class="n">INPUT_PIN_TYPE</span> <span class="o">*</span><span class="n">input_pin</span><span class="p">)</span> <span class="p">{</span>
+       <span class="k">this</span><span class="o">-&gt;</span><span class="n">input_pin</span> <span class="o">=</span> <span class="n">input_pin</span><span class="p">;</span>
+       <span class="n">input_pin</span><span class="o">-&gt;</span><span class="n">set_direction</span><span class="p">(</span><span class="n">IGpioPin</span><span class="o">::</span><span class="n">INPUT</span><span class="p">);</span>
+   <span class="p">}</span>
+
+   <span class="kr">inline</span> <span class="kt">void</span> <span class="n">notify_input_pin_change</span><span class="p">()</span> <span class="p">{</span>
+       <span class="n">IGpioPin</span><span class="o">::</span><span class="n">PinValue</span> <span class="n">value</span> <span class="o">=</span> <span class="k">this</span><span class="o">-&gt;</span><span class="n">input_pin</span><span class="o">-&gt;</span><span class="n">read</span><span class="p">();</span>
+       <span class="c1">// ... and then do something with the value</span>
+   <span class="p">}</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+<p>It is then the responsibility of the system-specific wiring code to connect
+whatever event or interrupt signals the input pin change to the notify function.
+For example, on an AVR:</p>
+<div class="highlight-cpp"><div class="highlight"><pre><span class="cp">#include &lt;tenacious/system/avr.h&gt;</span>
+
+<span class="n">SomeDevice</span><span class="o">&lt;</span><span class="n">typeof</span><span class="p">(</span><span class="o">*</span><span class="n">avr_system</span><span class="p">.</span><span class="n">B1</span><span class="p">)</span><span class="o">&gt;</span>
+    <span class="n">my_device</span><span class="p">(</span><span class="n">avr_system</span><span class="p">.</span><span class="n">B1</span><span class="p">);</span>
+<span class="c1">// Ideally the AVR system library would provide a less ugly way to wire this,</span>
+<span class="c1">// but this is just an example.</span>
+<span class="n">ISR</span><span class="p">(</span><span class="n">INT0_vect</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">my_device</span><span class="p">.</span><span class="n">notify_input_pin_change</span><span class="p">();</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The rules for this pattern are as follows:</p>
+<ul class="simple">
+<li>The documentation for a class that represents a device that emits an event
+must describe how to wire the event up to an event handler, and will ideally
+provide a convenient way to do so in one line of declaration code to avoid
+creating lots of noise in system-specific wiring code.</li>
+<li>A class that consumes an event must provide a method whose name begins with
+<cite>notify_</cite> and continues with a description of the intended event, as in
+the example above, and describe in the documentation of that method in
+what situations the method should be called.</li>
+<li>The notify method must be <cite>void</cite> and must take no parameters.</li>
+<li>The notify method should be declared as <cite>inline</cite> to increase the likelihood
+that the compiler will be able to embed its implementation directly into
+an interrupt service routine. This is particularly beneficial for AVR targets
+because avr-gcc can generate smaller code for an ISR that does not call any
+other functions.</li>
+<li>Likewise, the notify method should avoid calling any other functions where
+possible.</li>
+<li>The notify method should be as short as possible and should ideally mutate
+state only inside the instance the method is called on.</li>
+<li>Any variables that can be modified by the notify method must be declared
+<cite>volatile</cite> to let the compiler know they can be modified by asynchronous code,
+and care must be taken when mutating values that cannot be updated atomically.</li>
+</ul>
+</div>
 </div>
 
 
@@ -208,6 +284,7 @@ easily be re-used between different creations.</p>
 <li><a class="reference internal" href="#supported-platforms">Supported Platforms</a></li>
 <li><a class="reference internal" href="#compile-time-wiring-with-c-templates">Compile-time Wiring with C++ Templates</a></li>
 <li><a class="reference internal" href="#library-architecture">Library Architecture</a></li>
+<li><a class="reference internal" href="#asynchronous-event-handling">Asynchronous Event Handling</a></li>
 </ul>
 </li>
 </ul>
@@ -215,6 +292,9 @@ easily be re-used between different creations.</p>
   <h4>Previous topic</h4>
   <p class="topless"><a href="index.html"
                         title="previous chapter">libtenacious</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="features.html"
+                        title="next chapter">Features</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="_sources/intro.txt"
@@ -243,6 +323,9 @@ easily be re-used between different creations.</p>
         <li class="right" style="margin-right: 10px">
           <a href="genindex.html" title="General Index"
              >index</a></li>
+        <li class="right" >
+          <a href="features.html" title="Features"
+             >next</a> |</li>
         <li class="right" >
           <a href="index.html" title="libtenacious"
              >previous</a> |</li>

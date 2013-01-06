@@ -1,0 +1,224 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Devices &mdash; libtenacious 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/breathe.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="libtenacious 0.1 documentation" href="index.html" />
+    <link rel="up" title="Features" href="features.html" />
+    <link rel="prev" title="Buses" href="features_buses.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="features_buses.html" title="Buses"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">libtenacious 0.1 documentation</a> &raquo;</li>
+          <li><a href="features.html" accesskey="U">Features</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="devices">
+<h1>Devices<a class="headerlink" href="#devices" title="Permalink to this headline">¶</a></h1>
+<p>A <em>device</em> is a piece of equipment that can be controlled from a
+microcontroller, often via a <em>bus</em>. Classes in this category provide access
+to the specific features of a given device, and may also provide
+capability interface implementations for those devices that have a capability
+that is shared with several devices.</p>
+<div class="section" id="max7219-and-max7221-led-display-driver-ics">
+<h2>MAX7219 and MAX7221 LED display driver ICs<a class="headerlink" href="#max7219-and-max7221-led-display-driver-ics" title="Permalink to this headline">¶</a></h2>
+<p>These chips are manufactured by Maxim and  are both intended to drive up to
+64 LEDs arranged in sets of eight. They can be used to control 8x8 pixel LED
+matrices and also to control up to eight seven-segment LED displays.</p>
+<p>The chips act as SPI slaves so the driver class requires an SPI master
+implementation which it will use for signalling.</p>
+<div class="line-block">
+<div class="line">template &lt; class SPI_CHANNEL_TYPE &gt;</div>
+<div class="line"><em>class</em> <strong>Max72xxDevice</strong></div>
+</div>
+<blockquote>
+<div><p>Device driver for the MAX7219 and MAX7221 LED display driver ICs. </p>
+<p>These chips provide a convenient way to control up to 64 LEDs by multiplexing an 8x8 matrix. The chips can either produce digits on up to eight 7-segment numeric displays (decode mode) or directly drive an 8x8 pixel matrix (no decode mode). </p>
+<em>Public Functions</em><blockquote>
+<div><p id=""><span id="project0classMax72xxDevice_1acc95d37fad0b73ddb78d72fe69b623f1"></span><div class="line-block">
+<div class="line"> <strong>Max72xxDevice</strong>(SPI_CHANNEL_TYPE * spi_channel)</div>
+</div>
+</p>
+<blockquote>
+<div><p></p>
+<p></p>
+</div></blockquote>
+<p id=""><span id="project0classMax72xxDevice_1a91632eef1608db68a1854343e84a14db"></span><div class="line-block">
+<div class="line">void <strong>set_register</strong>(uint8_t register_idx, uint8_t value)</div>
+</div>
+</p>
+<blockquote>
+<div><p>Low-level operation to set a register value on the device. </p>
+<p>All other operations on this class are implemented in terms of this method. Consult the device datasheet for information on what registers are available. </p>
+</div></blockquote>
+<p id=""><span id="project0classMax72xxDevice_1aec7c76218c419f7b872f75be87a4448b"></span><div class="line-block">
+<div class="line">void <strong>set_intensity</strong>(uint8_t intensity)</div>
+</div>
+</p>
+<blockquote>
+<div><p>Set the intensity of the LEDs. </p>
+<p>Intensity is a value from 0 to 15 that controls the internal PWM of the chip, with higher values resulting in a brighter appearance. </p>
+</div></blockquote>
+<p id=""><span id="project0classMax72xxDevice_1aec4b30727abe3dd5703510a2402d11ce"></span><div class="line-block">
+<div class="line">void <strong>set_scan_limit</strong>(uint8_t limit)</div>
+</div>
+</p>
+<blockquote>
+<div><p>Set how many rows of eight LEDs will be scanned. </p>
+<p><p>The chips can be configured to scan from 1 to 8 rows of eight LEDs. When controlling 7-segment LED displays, this can be set to the number of digits.</p>
+<p>Since the chip illuminates one set of eight at a time in quick succession, reducing the scan limit can increase the brightness of the remaining digits, but be warned that this will increase the power dissipated by these digits. Consult the device datasheet for guidance. </p>
+</p>
+</div></blockquote>
+<p id=""><span id="project0classMax72xxDevice_1aaec04ae8f31782817261e44b65dc0f48"></span><div class="line-block">
+<div class="line">void <strong>enable_display_test</strong>(void)</div>
+</div>
+</p>
+<blockquote>
+<div><p>Enable the display test mode. </p>
+<p>In display test mode, all LEDs will be illumated regardless of what is set in the display data registers. </p>
+</div></blockquote>
+<p id=""><span id="project0classMax72xxDevice_1a5d5bf7a660ac082bceb60e1c380ace71"></span><div class="line-block">
+<div class="line">void <strong>disable_display_test</strong>(void)</div>
+</div>
+</p>
+<blockquote>
+<div><p>Disable the display test mode. </p>
+<p>This resumes normal operation after enabling test mode with enable_display_test. </p>
+</div></blockquote>
+<p id=""><span id="project0classMax72xxDevice_1a6c83fbf387a025d87b73b6c61395d82a"></span><div class="line-block">
+<div class="line">void <strong>enable_display</strong>(void)</div>
+</div>
+</p>
+<blockquote>
+<div><p>Enable the display. </p>
+<p>By default the display is disabled to avoid the risk of garbled, random display during system boot. Call this method to make the display begin to show what&#8217;s in the display registers. </p>
+</div></blockquote>
+<p id=""><span id="project0classMax72xxDevice_1a19713406d63a1de02a13f2fca44bea22"></span><div class="line-block">
+<div class="line">void <strong>disable_display</strong>(void)</div>
+</div>
+</p>
+<blockquote>
+<div><p>Disable the display. </p>
+<p>This will turn off all LEDs in the display, but leave the display registers intact. </p>
+</div></blockquote>
+<p id=""><span id="project0classMax72xxDevice_1ac192ebdd7c4d3b7094e0b33d49de7641"></span><div class="line-block">
+<div class="line">void <strong>write_decode_mode</strong>(uint8_t mask)</div>
+</div>
+</p>
+<blockquote>
+<div><p>Configure the Decode Mode register. </p>
+<p><p>Decode Mode may be enabled for each row of eight LEDs individually and controls how the display driver interprets the content of each row&#8217;s data register.</p>
+<p>When decode mode is enabled the register value will be interpreted as a number and rendered in a form that will cause the corresponding digit to be displayed on a 7-segment numeric display. When decode mode is disabled the register value is taken literally with each bit corresponding to one LED in the row.</p>
+<p>The parameter to this method is a bitmask where each bit corresponds to a row, and 1 enables decode mode while 0 disables it. To completely disable decode mode, pass 0x00. </p>
+</p>
+</div></blockquote>
+<p id=""><span id="project0classMax72xxDevice_1ae03f9a92b2f404b6fa697126dbdd3c82"></span><div class="line-block">
+<div class="line">void <strong>write_row</strong>(uint8_t row, uint8_t pattern)</div>
+</div>
+</p>
+<blockquote>
+<div><p>Write a row to the display. </p>
+<p><p>How the provided pattern is interpreted depends on whether the row has *decode mode* enabled.</p>
+<p>Row is the row index to write, from 0 to 7. Be aware that there is no range checking on this parameter so values greater than 7 will corrupt other display registers. </p>
+</p>
+</div></blockquote>
+</div></blockquote>
+</div></blockquote>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Devices</a><ul>
+<li><a class="reference internal" href="#max7219-and-max7221-led-display-driver-ics">MAX7219 and MAX7221 LED display driver ICs</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="features_buses.html"
+                        title="previous chapter">Buses</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/features_devices.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="features_buses.html" title="Buses"
+             >previous</a> |</li>
+        <li><a href="index.html">libtenacious 0.1 documentation</a> &raquo;</li>
+          <li><a href="features.html" >Features</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, Martin Atkins.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

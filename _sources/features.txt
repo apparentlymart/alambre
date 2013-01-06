@@ -5,3 +5,4 @@ Features
    :maxdepth: 2
 
    features_buses
+   features_devices
