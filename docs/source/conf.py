@@ -19,3 +19,8 @@ breathe_projects = {
     "libtenacious": "docs/doxygen/xml/",
 }
 breathe_default_project = "libtenacious"
+
+breathe_domain_by_extension = {
+    "cpp": "cpp",
+    "h": "cpp",
+}
