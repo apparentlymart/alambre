@@ -9,7 +9,14 @@
 #include <tenacious/system/avr/gpio.h>
 #include <tenacious/system/avr/spi.h>
 
-#define TENACIOUS_SYSTEM_AVR_PIN_ACCESSOR(PORTID, PININDEX) AvrGpioPort##PORTID##Pin<PININDEX> * PORTID##PININDEX
+/**
+   Macro for easily generating GPIO pin accessors.
+
+   This is a private implementation detail.
+
+   \private
+ */
+#define TENACIOUS_SYSTEM_AVR_PIN_ACCESSOR(PORTID, PININDEX) /** IGPIOPin implementation for pin PORTID##PININDEX */ AvrGpioPort##PORTID##Pin<PININDEX> * PORTID##PININDEX
 
 /**
    Provides access to the built-in features of an AVR microcontroller.
@@ -132,14 +139,21 @@ class AvrSystem {
 
     // Does this mcu support SPI?
     #ifdef SPSR
+    /**
+       ISpiBus implementation for the AVR's built-in SPI bus.
+
+       This member is available only if the target AVR has an SPI bus.
+     */
     AvrSpiBus *spi_bus;
     #endif
 
 };
 
-// Provide a global variable to access the AVR peripherals, but since
-// everything we expose is inlined in practice this should be optimized
-// away as unused in the final binary.
+/**
+   Global variable providing access to the features of the target AVR system.
+ */
 AvrSystem avr_system;
+
+#undef TENACIOUS_SYSTEM_AVR_PIN_ACCESSOR
 
 #endif

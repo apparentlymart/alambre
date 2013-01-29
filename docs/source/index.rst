@@ -10,4 +10,5 @@ Contents:
    :maxdepth: 2
 
    intro
+   systems
    features
