@@ -1,0 +1,326 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Capabilities &mdash; libtenacious 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/breathe.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="libtenacious 0.1 documentation" href="index.html" />
+    <link rel="up" title="Features" href="features.html" />
+    <link rel="prev" title="Devices" href="features_devices.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="features_devices.html" title="Devices"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">libtenacious 0.1 documentation</a> &raquo;</li>
+          <li><a href="features.html" accesskey="U">Features</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="capabilities">
+<h1>Capabilities<a class="headerlink" href="#capabilities" title="Permalink to this headline">¶</a></h1>
+<p>A <em>capability</em> is an abstract feature or set of features that is implemented
+in different ways by different hardware devices. Capabilities allow
+application code to be cleanly separated from the specific hardware device
+drivers to allow easier mocking, testing in a development environment, and
+porting to new hardware.</p>
+<div class="section" id="d-graphics">
+<h2>2D Graphics<a class="headerlink" href="#d-graphics" title="Permalink to this headline">¶</a></h2>
+<p>The <em>2D Graphics</em> capability represents 2D display devices of various kinds
+that provide a rectangular matrix of pixels. The most abstract capability
+interface can represent devices of all color types: single-color, bi-color,
+RGB and anything in between.</p>
+<p>This capability is split into two parts: the <em>2D graphics surface</em> interface,
+<a class="reference internal" href="#IBuffered2dGraphicsSurface" title="IBuffered2dGraphicsSurface"><tt class="xref cpp cpp-class docutils literal"><span class="pre">IBuffered2dGraphicsSurface</span></tt></a> provides a low-level double-buffered
+device interface supporting only single-pixel operations, while the
+graphics utility class, <a class="reference internal" href="#Graphics2d" title="Graphics2d"><tt class="xref cpp cpp-class docutils literal"><span class="pre">Graphics2d</span></tt></a>, wraps the surface interface
+to provide higher-level shape drawing such as line segments and circles.</p>
+<div class="line-block">
+<div class="line">template &lt; typename COORD_TYPE, typename COLOR_TYPE &gt;</div>
+<div class="line"><em>class</em> <strong>IBuffered2dGraphicsSurface</strong></div>
+</div>
+<blockquote>
+<div><p>Interface for a 2D bitmap supporting pixel set operations and buffer flips. </p>
+<p><p>This is an interface intended to be implemented for a 2D display device that can then be used with the <a class="reference internal" href="#project0classGraphics2d"><em>Graphics2d</em></a> template class to perform higher-level graphics operations.</p>
+<p>The coordinate system for all implementations is two-dimensional with each dimension proceeding from zero at the top left. However actual hardware may be mounted at a different orientation than its driver expects, causing the coordinate system to appear rotated.</p>
+<p>The behavior when specifying pixels outside the bounds of the bitmap is undefined, but it should be avoided since it&#8217;s likely to cause data corruption and possibly crashes on at least some implementations. </p>
+</p>
+<em>Public Type</em><blockquote>
+<div><p id=""><span id="project0classIBuffered2dGraphicsSurface_1a6472dd0840014904daecb63086f89202"></span>typedef COORD_TYPE <strong>coord_type</strong></p>
+<blockquote>
+<div><p>Typedef for the type used for coordinates. </p>
+<p>Exposed here for the benefit of wrapping classes, like Graphics. </p>
+</div></blockquote>
+<p id=""><span id="project0classIBuffered2dGraphicsSurface_1a03ff713659d01acd652bffcc467cdd80"></span>typedef COLOR_TYPE <strong>color_type</strong></p>
+<blockquote>
+<div><p>Typedef for the type used for coordinates. </p>
+<p>Exposed here for the benefit of wrapping classes, like Graphics. </p>
+</div></blockquote>
+</div></blockquote>
+<em>Public Functions</em><blockquote>
+<div><p id="IBuffered2dGraphicsSurface:COORD_TYPE.COLOR_TYPE:::set_pixel__COORD_TYPE.COORD_TYPE.COLOR_TYPE"><span id="project0classIBuffered2dGraphicsSurface_1adc6a4a44a8c39cdd499accb047596404"></span><div class="line-block">
+<div class="line">void <strong>set_pixel</strong>(COORD_TYPE x, COORD_TYPE y, COLOR_TYPE color)</div>
+</div>
+</p>
+<blockquote>
+<div><p>Set a particular pixel in the back-buffer to the given color. </p>
+<p></p>
+</div></blockquote>
+<p id="IBuffered2dGraphicsSurface:COORD_TYPE.COLOR_TYPE:::get_pixel__COORD_TYPE.COORD_TYPE"><span id="project0classIBuffered2dGraphicsSurface_1a68264a4566b51d1f3b3f053fa4439422"></span><div class="line-block">
+<div class="line">COLOR_TYPE <strong>get_pixel</strong>(COORD_TYPE x, COORD_TYPE y)</div>
+</div>
+</p>
+<blockquote>
+<div><p>Get the color of the given pixel in the back-buffer. </p>
+<p></p>
+</div></blockquote>
+<p id="IBuffered2dGraphicsSurface:COORD_TYPE.COLOR_TYPE:::flip__COORD_TYPE.COORD_TYPE.COORD_TYPE.COORD_TYPE"><span id="project0classIBuffered2dGraphicsSurface_1a26f0c30880a34cab2a16f462c665547b"></span><div class="line-block">
+<div class="line">void <strong>flip</strong>(COORD_TYPE x1, COORD_TYPE x2, COORD_TYPE y1, COORD_TYPE y2)</div>
+</div>
+</p>
+<blockquote>
+<div><p>Flip the back-buffer to the front-buffer for the given rectangular region. </p>
+<p>Implementations will update the given region as efficiently as possible. For example, an implementation for display hardware that only supports updating entire lines might ignore the x coordinates but update the range of rows given. </p>
+</div></blockquote>
+<p id="IBuffered2dGraphicsSurface:COORD_TYPE.COLOR_TYPE:::get_width"><span id="project0classIBuffered2dGraphicsSurface_1a0c372043fb49782306c2047b1b05f0a4"></span><div class="line-block">
+<div class="line">COORD_TYPE <strong>get_width</strong>()</div>
+</div>
+</p>
+<blockquote>
+<div><p>Get the width of the buffer in pixels. </p>
+<p></p>
+</div></blockquote>
+<p id="IBuffered2dGraphicsSurface:COORD_TYPE.COLOR_TYPE:::get_height"><span id="project0classIBuffered2dGraphicsSurface_1aafdd670ac5b2f1a4dce5d4c45323cf47"></span><div class="line-block">
+<div class="line">COORD_TYPE <strong>get_height</strong>()</div>
+</div>
+</p>
+<blockquote>
+<div><p>Get the width of the buffer in pixels. </p>
+<p></p>
+</div></blockquote>
+</div></blockquote>
+</div></blockquote>
+<div class="line-block">
+<div class="line">template &lt; typename SURFACE_TYPE &gt;</div>
+<div class="line"><em>class</em> <strong>Graphics2d</strong></div>
+</div>
+<blockquote>
+<div><p>Higher-level graphics utility class. </p>
+<p>Wraps a 2D graphics surface to provide higher-level drawing primitives like line segments and circles. </p>
+<em>Public Type</em><blockquote>
+<div><p id=""><span id="project0classGraphics2d_1a2447d5565e411f77cead1027502b59f6"></span>typedef SURFACE_TYPE::coord_type <strong>coord_type</strong></p>
+<blockquote>
+<div><p>The coordinate type of the underlying graphics surface. </p>
+<p></p>
+</div></blockquote>
+<p id=""><span id="project0classGraphics2d_1a5ddba208bfdbe2e459abb13b1a1eb3ec"></span>typedef SURFACE_TYPE::color_type <strong>color_type</strong></p>
+<blockquote>
+<div><p>The color type of the underlying graphics surface. </p>
+<p></p>
+</div></blockquote>
+</div></blockquote>
+<em>Public Functions</em><blockquote>
+<div><p id="Graphics2d:SURFACE_TYPE:::Graphics2d__SURFACE_TYPEP"><span id="project0classGraphics2d_1a7990e0947fe35cdee6f3c60a433578fc"></span><div class="line-block">
+<div class="line"> <strong>Graphics2d</strong>(SURFACE_TYPE * surface)</div>
+</div>
+</p>
+<blockquote>
+<div><p></p>
+<p></p>
+</div></blockquote>
+<p id="Graphics2d:SURFACE_TYPE:::set_pixel__COORD_TYPE.COORD_TYPE.COLOR_TYPE"><span id="project0classGraphics2d_1a0688fc244b06fe11ef6ddf9c2707bb5f"></span><div class="line-block">
+<div class="line">void <strong>set_pixel</strong>(COORD_TYPE x, COORD_TYPE y, COLOR_TYPE color)</div>
+</div>
+</p>
+<blockquote>
+<div><p>Set the given pixel in the back buffer to the given color. </p>
+<p></p>
+</div></blockquote>
+<p id="Graphics2d:SURFACE_TYPE:::get_pixel__COORD_TYPE.COORD_TYPE"><span id="project0classGraphics2d_1ac40ef61a02ae59422d29e24f7449768d"></span><div class="line-block">
+<div class="line">COLOR_TYPE <strong>get_pixel</strong>(COORD_TYPE x, COORD_TYPE y)</div>
+</div>
+</p>
+<blockquote>
+<div><p>Get the color of the given pixel from the back buffer. </p>
+<p></p>
+</div></blockquote>
+<p id="Graphics2d:SURFACE_TYPE:::get_width"><span id="project0classGraphics2d_1a7b52f8827bd4a8c8e43c18fe42932136"></span><div class="line-block">
+<div class="line">COORD_TYPE <strong>get_width</strong>()</div>
+</div>
+</p>
+<blockquote>
+<div><p>Set the width of the underlying surface. </p>
+<p></p>
+</div></blockquote>
+<p id="Graphics2d:SURFACE_TYPE:::get_height"><span id="project0classGraphics2d_1a7f14923c700ca8b87f73ae99be9345e2"></span><div class="line-block">
+<div class="line">COORD_TYPE <strong>get_height</strong>()</div>
+</div>
+</p>
+<blockquote>
+<div><p>Set the height of the underlying surface. </p>
+<p></p>
+</div></blockquote>
+<p id="Graphics2d:SURFACE_TYPE:::flip"><span id="project0classGraphics2d_1a117e21e50512a71e6fc3f789d0a8fc09"></span><div class="line-block">
+<div class="line">void <strong>flip</strong>()</div>
+</div>
+</p>
+<blockquote>
+<div><p>Copy to the front-buffer any changes made since the last call to flip. </p>
+<p></p>
+</div></blockquote>
+</div></blockquote>
+</div></blockquote>
+<div class="line-block">
+<div class="line">template &lt; unsigned int WIDTH, unsigned int HEIGHT, typename COLOR_TYPE &gt;</div>
+<div class="line"><em>class</em> <strong>AbstractBuffered2dGraphicsSurface</strong></div>
+</div>
+<blockquote>
+<div><p>Abstract class providing a common-case implementation of I2DBufferedGraphicsSurface with an in-memory backbuffer whose maximum size depends on the size of the int type on the target. </p>
+<p><p>The back-buffer is implemented as a two-dimentional array of the given COLOR_TYPE. This can be appropriate for RGB or other multi-color displays, but may not be best for displays with color formats that require less than one byte per pixel.</p>
+<p>Subclasses of this must implement the flip method taking an explicit rectangle. </p>
+</p>
+<em>Public Functions</em><blockquote>
+<div><p id="AbstractBuffered2dGraphicsSurface:WIDTH.HEIGHT.COLOR_TYPE:::AbstractBuffered2dGraphicsSurface"><span id="project0classAbstractBuffered2dGraphicsSurface_1a0243ad3581bf7302668bc1280a5e6afe"></span><div class="line-block">
+<div class="line"> <strong>AbstractBuffered2dGraphicsSurface</strong>()</div>
+</div>
+</p>
+<blockquote>
+<div><p></p>
+<p></p>
+</div></blockquote>
+<p id="AbstractBuffered2dGraphicsSurface:WIDTH.HEIGHT.COLOR_TYPE:::set_pixel__unsigned-i.unsigned-i.COLOR_TYPE"><span id="project0classAbstractBuffered2dGraphicsSurface_1a25809293df1979d7cdbe5167f8045b1d"></span><div class="line-block">
+<div class="line">void <strong>set_pixel</strong>(unsigned int intx x, unsigned int inty y, COLOR_TYPE color)</div>
+</div>
+</p>
+<blockquote>
+<div><p>Set a particular pixel in the back-buffer to the given color. </p>
+<p></p>
+</div></blockquote>
+<p id="AbstractBuffered2dGraphicsSurface:WIDTH.HEIGHT.COLOR_TYPE:::get_pixel__unsigned-i.unsigned-i"><span id="project0classAbstractBuffered2dGraphicsSurface_1ac4bec8543ee4e49c5672f7eca1ce843c"></span><div class="line-block">
+<div class="line">void <strong>get_pixel</strong>(unsigned int intx x, unsigned int inty y)</div>
+</div>
+</p>
+<blockquote>
+<div><p>Get the color of the given pixel in the back-buffer. </p>
+<p></p>
+</div></blockquote>
+<p id="AbstractBuffered2dGraphicsSurface:WIDTH.HEIGHT.COLOR_TYPE:::get_width"><span id="project0classAbstractBuffered2dGraphicsSurface_1a0ac2b5b0d8c5f7a5408ff4232f409390"></span><div class="line-block">
+<div class="line">unsigned int <strong>get_width</strong>()</div>
+</div>
+</p>
+<blockquote>
+<div><p>Get the width of the buffer in pixels. </p>
+<p></p>
+</div></blockquote>
+<p id="AbstractBuffered2dGraphicsSurface:WIDTH.HEIGHT.COLOR_TYPE:::get_height"><span id="project0classAbstractBuffered2dGraphicsSurface_1ae288a9d85a44679bcff3e9ba05d3f9b3"></span><div class="line-block">
+<div class="line">unsigned int <strong>get_height</strong>()</div>
+</div>
+</p>
+<blockquote>
+<div><p>Get the width of the buffer in pixels. </p>
+<p></p>
+</div></blockquote>
+<p id="AbstractBuffered2dGraphicsSurface:WIDTH.HEIGHT.COLOR_TYPE:::flip__unsigned-i.unsigned-i.unsigned-i.unsigned-i"><span id="project0classAbstractBuffered2dGraphicsSurface_1a528e5f702d57ca5dcafaabdce129e3e0"></span><div class="line-block">
+<div class="line">void <strong>flip</strong>(unsigned int intx1 x1, unsigned int intx2 x2, unsigned int inty1 y1, unsigned int inty2 y2)</div>
+</div>
+</p>
+<blockquote>
+<div><p>Flip the back-buffer to the front-buffer for the given rectangular region. </p>
+<p>Implementations will update the given region as efficiently as possible. For example, an implementation for display hardware that only supports updating entire lines might ignore the x coordinates but update the range of rows given. </p>
+</div></blockquote>
+</div></blockquote>
+</div></blockquote>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Capabilities</a><ul>
+<li><a class="reference internal" href="#d-graphics">2D Graphics</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="features_devices.html"
+                        title="previous chapter">Devices</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/features_capabilities.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="features_devices.html" title="Devices"
+             >previous</a> |</li>
+        <li><a href="index.html">libtenacious 0.1 documentation</a> &raquo;</li>
+          <li><a href="features.html" >Features</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, Martin Atkins.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

@@ -6,3 +6,4 @@ Features
 
    features_buses
    features_devices
+   features_capabilities

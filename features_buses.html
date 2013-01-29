@@ -67,7 +67,7 @@ often have GPIO <em>ports</em> that are collections of pins that are controlled 
 the same byte (or word) in memory. At present there is no standard model for
 GPIO ports, since these vary from system to system and are not often used
 together as a unit, but individual pins are modelled by the
-<tt class="xref cpp cpp-class docutils literal"><span class="pre">IGpioPin</span></tt> interface which is often used by device drivers for
+<a class="reference internal" href="#IGpioPin" title="IGpioPin"><tt class="xref cpp cpp-class docutils literal"><span class="pre">IGpioPin</span></tt></a> interface which is often used by device drivers for
 devices that require control of a single signal.</p>
 <p>Specific implementations of GPIO pins are most often found via <em>system</em>
 objects, which expose the built-in facilities of a given microcontroller or
@@ -101,7 +101,7 @@ embedded system.</p>
 </div></blockquote>
 </div></blockquote>
 <em>Public Functions</em><blockquote>
-<div><p id=""><span id="project0classIGpioPin_1a10190b80009a71e5931b1a1b3080305d"></span><div class="line-block">
+<div><p id="IGpioPin::set__X"><span id="project0classIGpioPin_1a10190b80009a71e5931b1a1b3080305d"></span><div class="line-block">
 <div class="line">void <strong>set</strong>(void)</div>
 </div>
 </p>
@@ -109,7 +109,7 @@ embedded system.</p>
 <div><p>Set the pin&#8217;s value to HIGH. </p>
 <p>This is only meaningful for pins configured for the OUTPUT direction and may have other hardware-dependent consequences on INPUT pins. </p>
 </div></blockquote>
-<p id=""><span id="project0classIGpioPin_1ac82dd0070c9caa34f3bf5b04c7a1677d"></span><div class="line-block">
+<p id="IGpioPin::clear__X"><span id="project0classIGpioPin_1ac82dd0070c9caa34f3bf5b04c7a1677d"></span><div class="line-block">
 <div class="line">void <strong>clear</strong>(void)</div>
 </div>
 </p>
@@ -117,7 +117,7 @@ embedded system.</p>
 <div><p>Set the pin&#8217;s value to LOW. </p>
 <p>This is only meaningful for pins configured for the OUTPUT direction and may have other hardware-dependent consequences on INPUT pins. </p>
 </div></blockquote>
-<p id=""><span id="project0classIGpioPin_1ab93357a2163090e4bd35053b668da646"></span><div class="line-block">
+<p id="IGpioPin::write__PinValue"><span id="project0classIGpioPin_1ab93357a2163090e4bd35053b668da646"></span><div class="line-block">
 <div class="line">void <strong>write</strong>(<a class="reference internal" href="#project0classIGpioPin_1a05d92f138b1f0ea9697aa09cc14ea954"><em>PinValue</em></a> value)</div>
 </div>
 </p>
@@ -125,7 +125,7 @@ embedded system.</p>
 <div><p>Write the given value to the pin. </p>
 <p>This is only meaningful for pins configured for the OUTPUT direction and may have other hardware-dependent consequences on INPUT pins. </p>
 </div></blockquote>
-<p id=""><span id="project0classIGpioPin_1a6862d877f1cf81797b55c7f60700cd8a"></span><div class="line-block">
+<p id="IGpioPin::read__X"><span id="project0classIGpioPin_1a6862d877f1cf81797b55c7f60700cd8a"></span><div class="line-block">
 <div class="line"><a class="reference internal" href="#project0classIGpioPin_1a05d92f138b1f0ea9697aa09cc14ea954"><em>PinValue</em></a> <strong>read</strong>(void)</div>
 </div>
 </p>
@@ -133,7 +133,7 @@ embedded system.</p>
 <div><p>Determine the current value of the pin. </p>
 <p>For some hardware this may work only for pins configured for the INPUT direction. </p>
 </div></blockquote>
-<p id=""><span id="project0classIGpioPin_1a400c27edb2b906562be8b6d4baae9cad"></span><div class="line-block">
+<p id="IGpioPin::set_direction__PinDirection"><span id="project0classIGpioPin_1a400c27edb2b906562be8b6d4baae9cad"></span><div class="line-block">
 <div class="line">void <strong>set_direction</strong>(<a class="reference internal" href="#project0classIGpioPin_1a6ce919d92b84fdd7e072aa0f67a33a27"><em>PinDirection</em></a> direction)</div>
 </div>
 </p>
@@ -141,7 +141,7 @@ embedded system.</p>
 <div><p>Configure the direction of the pin. </p>
 <p>Not all pins are direction-configurable. An implementation of this method will not be provided on such hardware. </p>
 </div></blockquote>
-<p id=""><span id="project0classIGpioPin_1a96170dd98307b1a436694bf61948f042"></span><div class="line-block">
+<p id="IGpioPin::get_direction__X"><span id="project0classIGpioPin_1a96170dd98307b1a436694bf61948f042"></span><div class="line-block">
 <div class="line"><a class="reference internal" href="#project0classIGpioPin_1a6ce919d92b84fdd7e072aa0f67a33a27"><em>PinDirection</em></a> <strong>get_direction</strong>(void)</div>
 </div>
 </p>
@@ -168,13 +168,13 @@ we model the master&#8217;s interaction with a particular slave on the bus. When
 the system is acting as a master and communicating with one or more slave
 devices there will generally be one SPI <em>bus</em> and then one SPI <em>channel</em> for
 each slave device on the bus.</p>
-<p>The SPI bus is represented by the interface <tt class="xref cpp cpp-class docutils literal"><span class="pre">ISpiBus</span></tt>. A channel
-is represented by an instance of the wrapper class <tt class="xref cpp cpp-class docutils literal"><span class="pre">SpiChannel</span></tt>,
+<p>The SPI bus is represented by the interface <a class="reference internal" href="#ISpiBus" title="ISpiBus"><tt class="xref cpp cpp-class docutils literal"><span class="pre">ISpiBus</span></tt></a>. A channel
+is represented by an instance of the wrapper class <a class="reference internal" href="#SpiChannel" title="SpiChannel"><tt class="xref cpp cpp-class docutils literal"><span class="pre">SpiChannel</span></tt></a>,
 which is parameterized by the SPI bus it belongs to and the GPIO pin that
 will act as the <em>slave select</em> signal.</p>
 <p>Finally, there is included a simple software implementation of SPI that
 works in terms of GPIO pins and only supports output in the master role. This
-is implemented in <tt class="xref cpp cpp-class docutils literal"><span class="pre">SoftwareSpiMasterOutputBus</span></tt>. Hardware-specific
+is implemented in <a class="reference internal" href="#SoftwareSpiMasterOutputBus" title="SoftwareSpiMasterOutputBus"><tt class="xref cpp cpp-class docutils literal"><span class="pre">SoftwareSpiMasterOutputBus</span></tt></a>. Hardware-specific
 SPI implementations are made available via <em>system</em> objects.</p>
 <div class="line-block">
 <div class="line"><em>class</em> <strong>ISpiBus</strong></div>
@@ -198,7 +198,7 @@ SPI implementations are made available via <em>system</em> objects.</p>
 </div></blockquote>
 </div></blockquote>
 <em>Public Functions</em><blockquote>
-<div><p id=""><span id="project0classISpiBus_1ab9819ed6be98f6600b9e896ff928b132"></span><div class="line-block">
+<div><p id="ISpiBus::shift_out__uint8_t.BitOrder"><span id="project0classISpiBus_1ab9819ed6be98f6600b9e896ff928b132"></span><div class="line-block">
 <div class="line">void <strong>shift_out</strong>(uint8_t value, <a class="reference internal" href="#project0classISpiBus_1a9aae309fea015209f55d29eac94950db"><em>BitOrder</em></a> order)</div>
 </div>
 </p>
@@ -206,7 +206,7 @@ SPI implementations are made available via <em>system</em> objects.</p>
 <div><p>Transmit an 8-bit value on the SPI bus in the bit order given. </p>
 <p></p>
 </div></blockquote>
-<p id=""><span id="project0classISpiBus_1ac9896a2df9e6e1838ec04b3ba76d867c"></span><div class="line-block">
+<p id="ISpiBus::shift_in__BitOrder"><span id="project0classISpiBus_1ac9896a2df9e6e1838ec04b3ba76d867c"></span><div class="line-block">
 <div class="line">uint8_t <strong>shift_in</strong>(<a class="reference internal" href="#project0classISpiBus_1a9aae309fea015209f55d29eac94950db"><em>BitOrder</em></a> order)</div>
 </div>
 </p>
@@ -227,7 +227,7 @@ SPI implementations are made available via <em>system</em> objects.</p>
 <p>It doesn&#8217;t make any sense to use this class with an SPI bus acting as a slave, since only the master role can select and deselect devices. </p>
 </p>
 <em>Public Functions</em><blockquote>
-<div><p id=""><span id="project0classSpiChannel_1a50cec5429593f0b89188c886ae55d742"></span><div class="line-block">
+<div><p id="SpiChannel:SPI_BUS_TYPE.SELECT_PIN_TYPE:::SpiChannel__SPI_BUS_TYPEP.SELECT_PIN_TYPEP"><span id="project0classSpiChannel_1a50cec5429593f0b89188c886ae55d742"></span><div class="line-block">
 <div class="line"> <strong>SpiChannel</strong>(SPI_BUS_TYPE * spi_bus, SELECT_PIN_TYPE * select_pin)</div>
 </div>
 </p>
@@ -235,7 +235,7 @@ SPI implementations are made available via <em>system</em> objects.</p>
 <div><p>Create a new channel with the given bus and select pin. </p>
 <p>As a side-effect of the instantiation the pin will be configured as an output and set high to deselect the device. </p>
 </div></blockquote>
-<p id=""><span id="project0classSpiChannel_1aef91865dc3a07b9e4f67a93e1b2040f9"></span><div class="line-block">
+<p id="SpiChannel:SPI_BUS_TYPE.SELECT_PIN_TYPE:::shift_out__uint8_t.ISpiBus::BitOrder"><span id="project0classSpiChannel_1aef91865dc3a07b9e4f67a93e1b2040f9"></span><div class="line-block">
 <div class="line">void <strong>shift_out</strong>(uint8_t value, <a class="reference internal" href="#project0classISpiBus_1a9aae309fea015209f55d29eac94950db"><em>ISpiBus::BitOrder</em></a> order)</div>
 </div>
 </p>
@@ -243,7 +243,7 @@ SPI implementations are made available via <em>system</em> objects.</p>
 <div><p>Transmit an 8-bit value on the SPI bus in the bit order given. </p>
 <p></p>
 </div></blockquote>
-<p id=""><span id="project0classSpiChannel_1af34a43b22f242d8f3fc24b154724b1a0"></span><div class="line-block">
+<p id="SpiChannel:SPI_BUS_TYPE.SELECT_PIN_TYPE:::shift_in__ISpiBus::BitOrder"><span id="project0classSpiChannel_1af34a43b22f242d8f3fc24b154724b1a0"></span><div class="line-block">
 <div class="line">uint8_t <strong>shift_in</strong>(<a class="reference internal" href="#project0classISpiBus_1a9aae309fea015209f55d29eac94950db"><em>ISpiBus::BitOrder</em></a> order)</div>
 </div>
 </p>
@@ -251,7 +251,7 @@ SPI implementations are made available via <em>system</em> objects.</p>
 <div><p>Recieve an 8-bit value on the SPI bus in the bit order given. </p>
 <p>In slave mode this will block until all eight bits have been recieved, with the rate of transmission under the control of the master. </p>
 </div></blockquote>
-<p id=""><span id="project0classSpiChannel_1af0644b9a25c88d8f80658ec6ea5a91bc"></span><div class="line-block">
+<p id="SpiChannel:SPI_BUS_TYPE.SELECT_PIN_TYPE:::select"><span id="project0classSpiChannel_1af0644b9a25c88d8f80658ec6ea5a91bc"></span><div class="line-block">
 <div class="line">void <strong>select</strong>()</div>
 </div>
 </p>
@@ -259,7 +259,7 @@ SPI implementations are made available via <em>system</em> objects.</p>
 <div><p>Activate the remote slave in preparation for sending or recieving data. </p>
 <p>A device driver that calls this method as part of the implementation of one of its operations should always deselect the device before returning from that operation so the caller does not accidentally activate two devices on the bus simultaneously. </p>
 </div></blockquote>
-<p id=""><span id="project0classSpiChannel_1a6d778a30e692916f74248b753abc5432"></span><div class="line-block">
+<p id="SpiChannel:SPI_BUS_TYPE.SELECT_PIN_TYPE:::deselect"><span id="project0classSpiChannel_1a6d778a30e692916f74248b753abc5432"></span><div class="line-block">
 <div class="line">void <strong>deselect</strong>()</div>
 </div>
 </p>

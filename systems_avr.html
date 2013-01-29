@@ -1,0 +1,193 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>AVR &mdash; libtenacious 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/breathe.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="libtenacious 0.1 documentation" href="index.html" />
+    <link rel="up" title="Supported Systems" href="systems.html" />
+    <link rel="next" title="Features" href="features.html" />
+    <link rel="prev" title="Supported Systems" href="systems.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="features.html" title="Features"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="systems.html" title="Supported Systems"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">libtenacious 0.1 documentation</a> &raquo;</li>
+          <li><a href="systems.html" accesskey="U">Supported Systems</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="avr">
+<h1>AVR<a class="headerlink" href="#avr" title="Permalink to this headline">¶</a></h1>
+<p>The AVR series of microcontrollers by Atmel are supported using <tt class="docutils literal"><span class="pre">avr-g++</span></tt>.
+AVR-specific classes and functions are provided to expose the functionality
+of the platform, including the GPIO ports, SPI interface, etc.</p>
+<p>The AVR interface is declared in the header <tt class="docutils literal"><span class="pre">tenacious/system/avr.h</span></tt>,
+with the primary entry point being the <tt class="docutils literal"><span class="pre">avr_system</span></tt> variable described
+below.</p>
+<p></p>
+<p></p>
+<em>Defines</em><blockquote>
+<div><p id=""><span id="project0avr_8h_1ae3a0ed88af17c4cc1abf9ddf05f78640"></span><strong>TENACIOUS_SYSTEM_AVR_PIN_ACCESSOR</strong></p>
+<blockquote>
+<div><p>Macro for easily generating GPIO pin accessors. </p>
+<p>This is a private implementation detail. </p>
+</div></blockquote>
+</div></blockquote>
+<em>Variables</em><blockquote>
+<div><p id=""><span id="project0avr_8h_1abad611bbd2ea2f0792f505c9995d8a98"></span><a class="reference internal" href="#project0classAvrSystem"><em>AvrSystem</em></a> <strong>avr_system</strong></p>
+<blockquote>
+<div><p>Global variable providing access to the features of the target AVR system. </p>
+<p></p>
+</div></blockquote>
+</div></blockquote>
+<p><p id="project0classAvrSystem"><em>class</em> <strong>AvrSystem</strong></p>
+<blockquote>
+<div><p>Provides access to the built-in features of an AVR microcontroller. </p>
+<p><p>The members of this class will vary depending on which specific microcontroller unit is targeted by the current build.</p>
+<p>The GPIO pins are available as members with the names given in the unit&#8217;s datasheet. The documentation for this class assumes a microcontroller with only GPIO port B available as an example; other ports will follow the same convention. Do not refer directly to the types of these members since it is considered an implementation detail; instead, use the typeof() operator. </p>
+</p>
+<em>Public Members</em><blockquote>
+<div><p id=""><span id="project0classAvrSystem_1a090aec667e991215ef0c12c2c4faf274"></span>AvrGpioPortBPin &lt; 0 &gt; * <strong>B0</strong></p>
+<blockquote>
+<div><p>IGPIOPin implementation for pin B0. </p>
+<p></p>
+</div></blockquote>
+<p id=""><span id="project0classAvrSystem_1a9d7f32ac646d67ed17f757180ce7140a"></span>AvrGpioPortBPin &lt; 1 &gt; * <strong>B1</strong></p>
+<blockquote>
+<div><p>IGPIOPin implementation for pin B1. </p>
+<p></p>
+</div></blockquote>
+<p id=""><span id="project0classAvrSystem_1af29b0c70cd73d5dd619724a869fde505"></span>AvrGpioPortBPin &lt; 2 &gt; * <strong>B2</strong></p>
+<blockquote>
+<div><p>IGPIOPin implementation for pin B2. </p>
+<p></p>
+</div></blockquote>
+<p id=""><span id="project0classAvrSystem_1ae72547f353a7939db4b2c8592c951712"></span>AvrGpioPortBPin &lt; 3 &gt; * <strong>B3</strong></p>
+<blockquote>
+<div><p>IGPIOPin implementation for pin B3. </p>
+<p></p>
+</div></blockquote>
+<p id=""><span id="project0classAvrSystem_1a9f2a6746e9822064bfe187b50d4d1b4b"></span>AvrGpioPortBPin &lt; 4 &gt; * <strong>B4</strong></p>
+<blockquote>
+<div><p>IGPIOPin implementation for pin B4. </p>
+<p></p>
+</div></blockquote>
+<p id=""><span id="project0classAvrSystem_1aaa2cf946e4a43cefb3a6beb1b4fb009e"></span>AvrGpioPortBPin &lt; 5 &gt; * <strong>B5</strong></p>
+<blockquote>
+<div><p>IGPIOPin implementation for pin B5. </p>
+<p></p>
+</div></blockquote>
+<p id=""><span id="project0classAvrSystem_1a37d1ef8ff6e992932530018d008ebbb4"></span>AvrGpioPortBPin &lt; 6 &gt; * <strong>B6</strong></p>
+<blockquote>
+<div><p>IGPIOPin implementation for pin B6. </p>
+<p></p>
+</div></blockquote>
+<p id=""><span id="project0classAvrSystem_1afd1032ef3c194afa8a88921318a53aeb"></span>AvrGpioPortBPin &lt; 7 &gt; * <strong>B7</strong></p>
+<blockquote>
+<div><p>IGPIOPin implementation for pin B7. </p>
+<p></p>
+</div></blockquote>
+<p id=""><span id="project0classAvrSystem_1a92896bd9535da33dfa053595626a7cbb"></span>AvrSpiBus  * <strong>spi_bus</strong></p>
+<blockquote>
+<div><p><a class="reference internal" href="features_buses.html#project0classISpiBus"><em>ISpiBus</em></a> implementation for the AVR&#8217;s built-in SPI bus. </p>
+<p>This member is available only if the target AVR has an SPI bus. </p>
+</div></blockquote>
+</div></blockquote>
+</div></blockquote>
+</p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="systems.html"
+                        title="previous chapter">Supported Systems</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="features.html"
+                        title="next chapter">Features</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/systems_avr.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="features.html" title="Features"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="systems.html" title="Supported Systems"
+             >previous</a> |</li>
+        <li><a href="index.html">libtenacious 0.1 documentation</a> &raquo;</li>
+          <li><a href="systems.html" >Supported Systems</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, Martin Atkins.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

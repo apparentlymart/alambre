@@ -28,6 +28,7 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="top" title="libtenacious 0.1 documentation" href="index.html" />
     <link rel="up" title="Features" href="features.html" />
+    <link rel="next" title="Capabilities" href="features_capabilities.html" />
     <link rel="prev" title="Buses" href="features_buses.html" /> 
   </head>
   <body>
@@ -37,6 +38,9 @@
         <li class="right" style="margin-right: 10px">
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="features_capabilities.html" title="Capabilities"
+             accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="features_buses.html" title="Buses"
              accesskey="P">previous</a> |</li>
@@ -72,7 +76,7 @@ implementation which it will use for signalling.</p>
 <div><p>Device driver for the MAX7219 and MAX7221 LED display driver ICs. </p>
 <p>These chips provide a convenient way to control up to 64 LEDs by multiplexing an 8x8 matrix. The chips can either produce digits on up to eight 7-segment numeric displays (decode mode) or directly drive an 8x8 pixel matrix (no decode mode). </p>
 <em>Public Functions</em><blockquote>
-<div><p id=""><span id="project0classMax72xxDevice_1acc95d37fad0b73ddb78d72fe69b623f1"></span><div class="line-block">
+<div><p id="Max72xxDevice:SPI_CHANNEL_TYPE:::Max72xxDevice__SPI_CHANNEL_TYPEP"><span id="project0classMax72xxDevice_1acc95d37fad0b73ddb78d72fe69b623f1"></span><div class="line-block">
 <div class="line"> <strong>Max72xxDevice</strong>(SPI_CHANNEL_TYPE * spi_channel)</div>
 </div>
 </p>
@@ -80,7 +84,7 @@ implementation which it will use for signalling.</p>
 <div><p></p>
 <p></p>
 </div></blockquote>
-<p id=""><span id="project0classMax72xxDevice_1a91632eef1608db68a1854343e84a14db"></span><div class="line-block">
+<p id="Max72xxDevice:SPI_CHANNEL_TYPE:::set_register__uint8_t.uint8_t"><span id="project0classMax72xxDevice_1a91632eef1608db68a1854343e84a14db"></span><div class="line-block">
 <div class="line">void <strong>set_register</strong>(uint8_t register_idx, uint8_t value)</div>
 </div>
 </p>
@@ -88,7 +92,7 @@ implementation which it will use for signalling.</p>
 <div><p>Low-level operation to set a register value on the device. </p>
 <p>All other operations on this class are implemented in terms of this method. Consult the device datasheet for information on what registers are available. </p>
 </div></blockquote>
-<p id=""><span id="project0classMax72xxDevice_1aec7c76218c419f7b872f75be87a4448b"></span><div class="line-block">
+<p id="Max72xxDevice:SPI_CHANNEL_TYPE:::set_intensity__uint8_t"><span id="project0classMax72xxDevice_1aec7c76218c419f7b872f75be87a4448b"></span><div class="line-block">
 <div class="line">void <strong>set_intensity</strong>(uint8_t intensity)</div>
 </div>
 </p>
@@ -96,7 +100,7 @@ implementation which it will use for signalling.</p>
 <div><p>Set the intensity of the LEDs. </p>
 <p>Intensity is a value from 0 to 15 that controls the internal PWM of the chip, with higher values resulting in a brighter appearance. </p>
 </div></blockquote>
-<p id=""><span id="project0classMax72xxDevice_1aec4b30727abe3dd5703510a2402d11ce"></span><div class="line-block">
+<p id="Max72xxDevice:SPI_CHANNEL_TYPE:::set_scan_limit__uint8_t"><span id="project0classMax72xxDevice_1aec4b30727abe3dd5703510a2402d11ce"></span><div class="line-block">
 <div class="line">void <strong>set_scan_limit</strong>(uint8_t limit)</div>
 </div>
 </p>
@@ -106,7 +110,7 @@ implementation which it will use for signalling.</p>
 <p>Since the chip illuminates one set of eight at a time in quick succession, reducing the scan limit can increase the brightness of the remaining digits, but be warned that this will increase the power dissipated by these digits. Consult the device datasheet for guidance. </p>
 </p>
 </div></blockquote>
-<p id=""><span id="project0classMax72xxDevice_1aaec04ae8f31782817261e44b65dc0f48"></span><div class="line-block">
+<p id="Max72xxDevice:SPI_CHANNEL_TYPE:::enable_display_test__X"><span id="project0classMax72xxDevice_1aaec04ae8f31782817261e44b65dc0f48"></span><div class="line-block">
 <div class="line">void <strong>enable_display_test</strong>(void)</div>
 </div>
 </p>
@@ -114,7 +118,7 @@ implementation which it will use for signalling.</p>
 <div><p>Enable the display test mode. </p>
 <p>In display test mode, all LEDs will be illumated regardless of what is set in the display data registers. </p>
 </div></blockquote>
-<p id=""><span id="project0classMax72xxDevice_1a5d5bf7a660ac082bceb60e1c380ace71"></span><div class="line-block">
+<p id="Max72xxDevice:SPI_CHANNEL_TYPE:::disable_display_test__X"><span id="project0classMax72xxDevice_1a5d5bf7a660ac082bceb60e1c380ace71"></span><div class="line-block">
 <div class="line">void <strong>disable_display_test</strong>(void)</div>
 </div>
 </p>
@@ -122,7 +126,7 @@ implementation which it will use for signalling.</p>
 <div><p>Disable the display test mode. </p>
 <p>This resumes normal operation after enabling test mode with enable_display_test. </p>
 </div></blockquote>
-<p id=""><span id="project0classMax72xxDevice_1a6c83fbf387a025d87b73b6c61395d82a"></span><div class="line-block">
+<p id="Max72xxDevice:SPI_CHANNEL_TYPE:::enable_display__X"><span id="project0classMax72xxDevice_1a6c83fbf387a025d87b73b6c61395d82a"></span><div class="line-block">
 <div class="line">void <strong>enable_display</strong>(void)</div>
 </div>
 </p>
@@ -130,7 +134,7 @@ implementation which it will use for signalling.</p>
 <div><p>Enable the display. </p>
 <p>By default the display is disabled to avoid the risk of garbled, random display during system boot. Call this method to make the display begin to show what&#8217;s in the display registers. </p>
 </div></blockquote>
-<p id=""><span id="project0classMax72xxDevice_1a19713406d63a1de02a13f2fca44bea22"></span><div class="line-block">
+<p id="Max72xxDevice:SPI_CHANNEL_TYPE:::disable_display__X"><span id="project0classMax72xxDevice_1a19713406d63a1de02a13f2fca44bea22"></span><div class="line-block">
 <div class="line">void <strong>disable_display</strong>(void)</div>
 </div>
 </p>
@@ -138,7 +142,7 @@ implementation which it will use for signalling.</p>
 <div><p>Disable the display. </p>
 <p>This will turn off all LEDs in the display, but leave the display registers intact. </p>
 </div></blockquote>
-<p id=""><span id="project0classMax72xxDevice_1ac192ebdd7c4d3b7094e0b33d49de7641"></span><div class="line-block">
+<p id="Max72xxDevice:SPI_CHANNEL_TYPE:::write_decode_mode__uint8_t"><span id="project0classMax72xxDevice_1ac192ebdd7c4d3b7094e0b33d49de7641"></span><div class="line-block">
 <div class="line">void <strong>write_decode_mode</strong>(uint8_t mask)</div>
 </div>
 </p>
@@ -149,7 +153,7 @@ implementation which it will use for signalling.</p>
 <p>The parameter to this method is a bitmask where each bit corresponds to a row, and 1 enables decode mode while 0 disables it. To completely disable decode mode, pass 0x00. </p>
 </p>
 </div></blockquote>
-<p id=""><span id="project0classMax72xxDevice_1ae03f9a92b2f404b6fa697126dbdd3c82"></span><div class="line-block">
+<p id="Max72xxDevice:SPI_CHANNEL_TYPE:::write_row__uint8_t.uint8_t"><span id="project0classMax72xxDevice_1ae03f9a92b2f404b6fa697126dbdd3c82"></span><div class="line-block">
 <div class="line">void <strong>write_row</strong>(uint8_t row, uint8_t pattern)</div>
 </div>
 </p>
@@ -181,6 +185,9 @@ implementation which it will use for signalling.</p>
   <h4>Previous topic</h4>
   <p class="topless"><a href="features_buses.html"
                         title="previous chapter">Buses</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="features_capabilities.html"
+                        title="next chapter">Capabilities</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="_sources/features_devices.txt"
@@ -209,6 +216,9 @@ implementation which it will use for signalling.</p>
         <li class="right" style="margin-right: 10px">
           <a href="genindex.html" title="General Index"
              >index</a></li>
+        <li class="right" >
+          <a href="features_capabilities.html" title="Capabilities"
+             >next</a> |</li>
         <li class="right" >
           <a href="features_buses.html" title="Buses"
              >previous</a> |</li>
