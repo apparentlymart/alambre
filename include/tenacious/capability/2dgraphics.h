@@ -60,6 +60,16 @@ class IBuffered2dGraphicsSurface {
     */
     void flip(COORD_TYPE x1, COORD_TYPE x2, COORD_TYPE y1, COORD_TYPE y2);
 
+    /**
+       Get the closest color supported by this surface for the
+       8-bit-per-channel RGB color given.
+
+       This function only really makes sense for true color displays,
+       and is likely to be unimplemented or implemented in a strange way
+       for implementations that target low-color displays or displays whose
+       colors are intrinsic rather than user-programmable.
+     */
+    COLOR_TYPE get_closest_color(unsigned char r, unsigned char g, unsigned char b);
 
     /**
        Get the width of the buffer in pixels.

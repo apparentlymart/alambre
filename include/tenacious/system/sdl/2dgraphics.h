@@ -14,8 +14,8 @@
    member an SDL surface that is WIDTH * PIXEL_SCALE pixels wide and
    HEIGHT * PIXEL_SCALE pixels tall.
  */
-template <unsigned int WIDTH, unsigned int HEIGHT, unsigned int PIXEL_SCALE, typename COLOR_TYPE>
-class AbstractSdl2dGraphicsSurface : public AbstractBuffered2dGraphicsSurface<WIDTH, HEIGHT, COLOR_TYPE> {
+template <unsigned int WIDTH, unsigned int HEIGHT, unsigned int PIXEL_SCALE>
+class AbstractSdl2dGraphicsSurface : public AbstractBuffered2dGraphicsSurface<WIDTH, HEIGHT, Uint32> {
 
   protected:
 
@@ -38,19 +38,20 @@ class AbstractSdl2dGraphicsSurface : public AbstractBuffered2dGraphicsSurface<WI
                 SDL_FillRect(
                     this->surface,
                     &rect,
-                    this->convert_color(this->buf[y][x])
+                    this->buf[y][x]
                 );
                 SDL_Flip(this->surface);
             }
         }
     }
 
+    inline Uint32 get_closest_color(unsigned char r, unsigned char g, unsigned char b) {
+        return SDL_MapRGB(this->surface->format, r, g, b);
+    }
+
   protected:
 
     virtual SDL_Surface * create_surface() = 0;
-
-    // Subclasses must override this.
-    virtual Uint32 convert_color(COLOR_TYPE src) = 0;
 
 };
 
@@ -63,7 +64,7 @@ class AbstractSdl2dGraphicsSurface : public AbstractBuffered2dGraphicsSurface<WI
    instantiating this.
 */
 template <unsigned int WIDTH, unsigned int HEIGHT, unsigned int PIXEL_SCALE>
-class InMemorySdl2dGraphicsSurface : public AbstractSdl2dGraphicsSurface<WIDTH, HEIGHT, PIXEL_SCALE, Uint32> {
+class InMemorySdl2dGraphicsSurface : public AbstractSdl2dGraphicsSurface<WIDTH, HEIGHT, PIXEL_SCALE> {
 
   public:
 
@@ -89,11 +90,6 @@ class InMemorySdl2dGraphicsSurface : public AbstractSdl2dGraphicsSurface<WIDTH, 
         );
     }
 
-    virtual Uint32 convert_color(Uint32 src) {
-        // Nothing to convert!
-        return src;
-    }
-
 };
 
 /**
@@ -105,7 +101,7 @@ class InMemorySdl2dGraphicsSurface : public AbstractSdl2dGraphicsSurface<WIDTH, 
    on-screen and updated.
 */
 template <unsigned int WIDTH, unsigned int HEIGHT, unsigned int PIXEL_SCALE=1>
-class WindowedSdl2dGraphicsSurface : public AbstractSdl2dGraphicsSurface<WIDTH, HEIGHT, PIXEL_SCALE, Uint32> {
+class WindowedSdl2dGraphicsSurface : public AbstractSdl2dGraphicsSurface<WIDTH, HEIGHT, PIXEL_SCALE> {
 
   public:
 
@@ -121,11 +117,6 @@ class WindowedSdl2dGraphicsSurface : public AbstractSdl2dGraphicsSurface<WIDTH, 
             32,
             SDL_SWSURFACE
         );
-    }
-
-    virtual Uint32 convert_color(Uint32 src) {
-        // Nothing to convert!
-        return src;
     }
 
 };
