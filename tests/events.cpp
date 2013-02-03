@@ -42,6 +42,11 @@ void event_handler<typename Emitter::WangleEvent>(Emitter * emitter) {
     wangle_count[emitter->id]++;
 }
 
+TEST(TestEvents, Setup) {
+    ::testing::StaticAssertTypeEq<Emitter, Emitter::FrobEvent::emitter_type>;
+    ::testing::StaticAssertTypeEq<Emitter, Emitter::WangleEvent::emitter_type>;
+}
+
 TEST(TestEvents, Emitting) {
 
     emitter0.frob();
