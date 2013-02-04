@@ -10,7 +10,7 @@ LIB_FILE=$(LIB_DIR)/libtenacious.a
 SOURCE_FILES=$(shell find src -type f -name '*.cpp')
 HEADER_FILES=$(shell find $(INCLUDE_DIR) -type f -name '*.h')
 OBJ_FILES=$(patsubst src/%.cpp,$(OBJ_DIR)/%.o,$(SOURCE_FILES))
-CXX_OPTS:=
+CXX_OPTS := -std=gnu++0x
 ifeq ($(GCC_MACHINE),avr)
 ifneq ($(MCU),)
 	CXX_OPTS += -mmcu=$(MCU)
