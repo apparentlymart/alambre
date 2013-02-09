@@ -1,12 +1,12 @@
-#ifndef TENACIOUS_SYSTEM_AVR_GPIO
-#define TENACIOUS_SYSTEM_AVR_GPIO
+#ifndef ALAMBRE_SYSTEM_AVR_GPIO
+#define ALAMBRE_SYSTEM_AVR_GPIO
 
 #ifndef __AVR_ARCH__
-#error tenacious/system/avr/gpio.h may be used only in AVR builds.
+#error alambre/system/avr/gpio.h may be used only in AVR builds.
 #endif
 
 #include <avr/io.h>
-#include <tenacious/bus/gpio.h>
+#include <alambre/bus/gpio.h>
 
 // We generate a separate class for each port using preprocessor macros
 // because it's not clear to me yet how to (and whether it's possible to)

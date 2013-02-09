@@ -1,5 +1,5 @@
-#ifndef TENACIOUS_BUS_GPIO
-#define TENACIOUS_BUS_GPIO
+#ifndef ALAMBRE_BUS_GPIO
+#define ALAMBRE_BUS_GPIO
 
 /**
    Represents a particular GPIO pin.

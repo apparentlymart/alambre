@@ -1,4 +1,4 @@
-`libtenacious` is (or rather, is _intended to grow into_) a simple hardware
+Alambre is (or rather, is _intended to grow into_) a simple hardware
 abstraction library for embedded applications development.
 
 Introduction

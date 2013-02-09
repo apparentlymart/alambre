@@ -2,7 +2,7 @@
 #include "gtest/gtest.h"
 #include <gmock/gmock.h>
 #include "mock/capability/2dgraphics.h"
-#include "tenacious/capability/2dgraphics.h"
+#include "alambre/capability/2dgraphics.h"
 
 using ::testing::InSequence;
 using ::testing::Return;

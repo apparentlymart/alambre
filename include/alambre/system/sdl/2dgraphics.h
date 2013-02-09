@@ -1,10 +1,10 @@
 #ifdef SDL_DUMMIES
-#ifndef TENACIOUS_SYSTEM_SDL_2DGRAPHICS
-#define TENACIOUS_SYSTEM_SDL_2DGRAPHICS
+#ifndef ALAMBRE_SYSTEM_SDL_2DGRAPHICS
+#define ALAMBRE_SYSTEM_SDL_2DGRAPHICS
 
 #include <SDL.h>
-#include <tenacious/capability/2dgraphics.h>
-#include <tenacious/system/sdl.h>
+#include <alambre/capability/2dgraphics.h>
+#include <alambre/system/sdl.h>
 
 /**
    An abstract implementation of the IBuffered2dGraphicsSurface interface

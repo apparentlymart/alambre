@@ -1,8 +1,8 @@
-#ifndef TENACIOUS_BUS_SPI
-#define TENACIOUS_BUS_SPI
+#ifndef ALAMBRE_BUS_SPI
+#define ALAMBRE_BUS_SPI
 
 #include <stdint.h>
-#include <tenacious/bus/gpio.h>
+#include <alambre/bus/gpio.h>
 
 /**
    Represents an SPI bus.

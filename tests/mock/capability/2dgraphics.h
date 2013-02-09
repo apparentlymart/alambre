@@ -1,8 +1,8 @@
-#ifndef TENACIOUS_MOCK_2DGRAPHICS
-#define TENACIOUS_MOCK_2DGRAPHICS
+#ifndef ALAMBRE_MOCK_2DGRAPHICS
+#define ALAMBRE_MOCK_2DGRAPHICS
 
 #include <gmock/gmock.h>
-#include <tenacious/capability/2dgraphics.h>
+#include <alambre/capability/2dgraphics.h>
 
 class MockBuffered2dGraphicsSurface : public IBuffered2dGraphicsSurface<unsigned int, unsigned char> {
 

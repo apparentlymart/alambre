@@ -1,9 +1,9 @@
-#ifndef TENACIOUS_MOCK_BUS
-#define TENACIOUS_MOCK_BUS
+#ifndef ALAMBRE_MOCK_BUS
+#define ALAMBRE_MOCK_BUS
 
 #include <gmock/gmock.h>
-#include <tenacious/bus/gpio.h>
-#include <tenacious/bus/spi.h>
+#include <alambre/bus/gpio.h>
+#include <alambre/bus/spi.h>
 
 class MockGpioPin : public IGpioPin {
 

@@ -1,7 +1,7 @@
 
 #include "gtest/gtest.h"
 #include "mock/bus.h"
-#include "tenacious/bus/spi.h"
+#include "alambre/bus/spi.h"
 
 using ::testing::InSequence;
 

@@ -1,6 +1,6 @@
 #ifdef SDL_DUMMIES
-#ifndef TENACIOUS_SYSTEM_SDL
-#define TENACIOUS_SYSTEM_SDL
+#ifndef ALAMBRE_SYSTEM_SDL
+#define ALAMBRE_SYSTEM_SDL
 
 #include <SDL.h>
 
@@ -34,7 +34,7 @@ class SdlSystem {
 
 };
 
-#include <tenacious/system/sdl/2dgraphics.h>
+#include <alambre/system/sdl/2dgraphics.h>
 
 #endif
 #endif // SDL_DUMMIES

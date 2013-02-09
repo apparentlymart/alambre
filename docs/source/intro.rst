@@ -1,7 +1,7 @@
 Introduction
 ============
 
-libtenacious is a C++ library for microcontrollers and other embedded systems.
+Alambre is a C++ library for microcontrollers and other embedded systems.
 Its main goal is providing a hardware abstraction allowing drivers to be
 written for a variety of interesting devices and then used across all
 supported platforms. For example, it should be possible to write a driver
@@ -83,7 +83,7 @@ of the AVR pins as part of the declaration:
 
 .. code-block:: cpp
 
-   #include <tenacious/system/avr.h>
+   #include <alambre/system/avr.h>
 
    SomeDevice<typeof(*avr_system.B1), typeof(*avr_system.B2)>
        my_device(avr_system.B1, avr_system.B2);
@@ -210,7 +210,7 @@ For example, on an AVR:
 
 .. code-block:: cpp
 
-   #include <tenacious/system/avr.h>
+   #include <alambre/system/avr.h>
 
    SomeDevice<typeof(*avr_system.B1)>
        my_device(avr_system.B1);

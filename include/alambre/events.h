@@ -1,5 +1,5 @@
-#ifndef TENACIOUS_EVENTS
-#define TENACIOUS_EVENTS
+#ifndef ALAMBRE_EVENTS
+#define ALAMBRE_EVENTS
 
 template<class EVENT_TYPE>
 inline void event_handler(typename EVENT_TYPE::emitter_type *emitter) {

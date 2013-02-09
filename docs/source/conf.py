@@ -5,7 +5,7 @@ templates_path = ['_templates']
 source_suffix = '.rst'
 master_doc = 'index'
 
-project = u'libtenacious'
+project = u'Alambre'
 copyright = u'2012, Martin Atkins'
 
 version = '0.1'
@@ -16,9 +16,9 @@ html_theme = 'default'
 html_static_path = ['_static']
 
 breathe_projects = {
-    "libtenacious": "docs/doxygen/xml/",
+    "alambre": "docs/doxygen/xml/",
 }
-breathe_default_project = "libtenacious"
+breathe_default_project = "alambre"
 
 breathe_domain_by_extension = {
     "cpp": "cpp",

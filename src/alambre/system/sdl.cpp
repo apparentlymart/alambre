@@ -1,6 +1,6 @@
 #ifdef SDL_DUMMIES
 
-#include <tenacious/system/sdl.h>
+#include <alambre/system/sdl.h>
 
 bool SdlSystem::initialized = false;
 Uint32 SdlSystem::init_flags = 0;

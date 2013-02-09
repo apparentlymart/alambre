@@ -6,7 +6,7 @@ GCC_MACHINE:=$(shell $(CXX) -dumpmachine)
 OBJ_DIR=obj/$(GCC_MACHINE)
 LIB_DIR=lib/$(GCC_MACHINE)
 INCLUDE_DIR=include/
-LIB_FILE=$(LIB_DIR)/libtenacious.a
+LIB_FILE=$(LIB_DIR)/libalambre.a
 SOURCE_FILES=$(shell find src -type f -name '*.cpp')
 HEADER_FILES=$(shell find $(INCLUDE_DIR) -type f -name '*.h')
 OBJ_FILES=$(patsubst src/%.cpp,$(OBJ_DIR)/%.o,$(SOURCE_FILES))
@@ -28,7 +28,7 @@ DOCS_PYTHON_ENV=docs/pythonenv
 # If you're not on Debian then you may wish to override this.
 GTEST_ROOT=/usr/src/gtest
 
-all: $(LIB_DIR)/libtenacious.a
+all: $(LIB_DIR)/libalambre.a
 
 $(OBJ_DIR)/%.o: src/%.cpp $(OBJ_DIR) $(HEADER_FILES)
 	@mkdir -p $(@D)

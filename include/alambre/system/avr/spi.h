@@ -1,8 +1,8 @@
-#ifndef TENACIOUS_SYSTEM_AVR_SPI
-#define TENACIOUS_SYSTEM_AVR_SPI
+#ifndef ALAMBRE_SYSTEM_AVR_SPI
+#define ALAMBRE_SYSTEM_AVR_SPI
 
 #ifndef __AVR_ARCH__
-#error tenacious/system/avr/spi.h may be used only in AVR builds.
+#error alambre/system/avr/spi.h may be used only in AVR builds.
 #endif
 
 #include <avr/io.h>
@@ -11,7 +11,7 @@
 // system has a SPI Status Register and therefore supports SPI.
 #ifdef SPSR
 
-#include <tenacious/bus/spi.h>
+#include <alambre/bus/spi.h>
 
 class AvrSpiBus : public ISpiBus {
 
