@@ -1,4 +1,3 @@
-#ifdef SDL_DUMMIES
 #ifndef ALAMBRE_SYSTEM_SDL_2DGRAPHICS
 #define ALAMBRE_SYSTEM_SDL_2DGRAPHICS
 
@@ -122,4 +121,3 @@ class WindowedSdl2dGraphicsSurface : public AbstractSdl2dGraphicsSurface<WIDTH, 
 };
 
 #endif
-#endif // SDL_DUMMIES

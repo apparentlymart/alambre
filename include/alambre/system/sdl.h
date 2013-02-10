@@ -1,4 +1,3 @@
-#ifdef SDL_DUMMIES
 #ifndef ALAMBRE_SYSTEM_SDL
 #define ALAMBRE_SYSTEM_SDL
 
@@ -37,4 +36,3 @@ class SdlSystem {
 #include <alambre/system/sdl/2dgraphics.h>
 
 #endif
-#endif // SDL_DUMMIES
