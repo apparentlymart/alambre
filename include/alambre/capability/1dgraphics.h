@@ -1,6 +1,8 @@
 #ifndef ALAMBRE_CAPABILITY_1DGRAPHICS
 #define ALAMBRE_CAPABILITY_1DGRAPHICS
 
+#include <alambre/capability/2dgraphics.h>
+
 /**
    Interface for a 1D bitmap supporting pixel set operations and buffer flips.
 
@@ -110,6 +112,104 @@ class AbstractBuffered1dGraphicsSurface : public IBuffered1dGraphicsSurface<unsi
     }
 
     void flip();
+};
+
+/**
+   Abstract class mapping the IBuffered2dGraphicsSurface capability to
+   an implementation of IBuffered1dGraphicsSurface.
+
+   This is a generic implementation with no specified mapping from 2D to
+   1D coordinate spaces. Subclasses must implement map_coordinates to
+   map 2D coordinates onto the 1D index space in some way.
+
+   Subclasses must also implement get_width and get_height since only
+   once the projection is defined can one define the rectangular space
+   into which it projects.
+ */
+template <class BUFFERED_1D_SURFACE_TYPE, class ADAPTER_TYPE>
+class AbstractBuffered2dTo1dGraphicsSurfaceAdapter : public IBuffered2dGraphicsSurface<typename BUFFERED_1D_SURFACE_TYPE::index_type, typename BUFFERED_1D_SURFACE_TYPE::color_type> {
+
+  protected:
+    BUFFERED_1D_SURFACE_TYPE *inner_surface;
+
+  public:
+
+    typedef BUFFERED_1D_SURFACE_TYPE inner_surface_type;
+    typedef typename inner_surface_type::index_type index_type;
+    typedef index_type coord_type;
+    typedef typename inner_surface_type::color_type color_type;
+
+    /**
+       Take 2D coordinates and return the corresponding 1D index for those
+       coordinates.
+
+       This function provides the "projection" from the 2D coordinate system
+       onto the underlying 1D coordinate system.
+     */
+    index_type map_coordinates(coord_type x, coord_type y);
+
+    void set_pixel(coord_type x, coord_type y, color_type color) {
+        index_type index = static_cast<ADAPTER_TYPE*>(this)->map_coordinates(x, y);
+        //index_type index = this->ADAPTER_TYPE::map_coordinates(x, y);
+        this->inner_surface->set_pixel(index, color);
+    }
+
+    color_type get_pixel(coord_type x, coord_type y) {
+        index_type index = static_cast<ADAPTER_TYPE*>(this)->map_coordinates(x, y);
+        return this->inner_surface->get_pixel(index);
+    }
+
+    inline void get_closest_color(unsigned char r, unsigned char g, unsigned char b) {
+        return this->inner_surface->get_closest_color(r, g, b);
+    }
+
+};
+
+/**
+ * Linear, left-to-right, top-to-bottom projection of 2D onto 1D.
+ *
+ * This implementation of AbstractBuffered2dTo1dGraphicsSurfaceAdapter
+ * assumes that the 1D surface is sliced into rows that all go from
+ * left to right, and then the rows themselves proceed from top to bottom.
+ *
+ * The length of the 1D surface should be a multiple of the given WIDTH.
+ * If it isn't then the height will be rounded down to the nearest whole row.
+ */
+template <class BUFFERED_1D_SURFACE_TYPE, unsigned long WIDTH>
+class RowSlicedBuffered2dTo1dGraphicsSurfaceAdapter : public AbstractBuffered2dTo1dGraphicsSurfaceAdapter<BUFFERED_1D_SURFACE_TYPE, RowSlicedBuffered2dTo1dGraphicsSurfaceAdapter<BUFFERED_1D_SURFACE_TYPE, WIDTH> > {
+
+  private:
+    typedef AbstractBuffered2dTo1dGraphicsSurfaceAdapter<BUFFERED_1D_SURFACE_TYPE, RowSlicedBuffered2dTo1dGraphicsSurfaceAdapter<BUFFERED_1D_SURFACE_TYPE, WIDTH> > base_type;
+
+  public:
+
+    // Forcefully "inherit" the typedefs from our parent, because
+    // typedefs don't inherit automatically in C++.
+    typedef typename base_type::inner_surface_type inner_surface_type;
+    typedef typename base_type::index_type index_type;
+    typedef typename base_type::coord_type coord_type;
+    typedef typename base_type::color_type color_type;
+
+    RowSlicedBuffered2dTo1dGraphicsSurfaceAdapter(BUFFERED_1D_SURFACE_TYPE *inner_surface) {
+        this->inner_surface = inner_surface;
+    }
+
+    inline typename base_type::index_type get_width() {
+        // Since WIDTH is a constant this conversion ought to happen
+        // at compile time.
+        return (typename base_type::index_type)(WIDTH);
+    }
+
+    inline typename base_type::index_type get_height() {
+        // If the inner surface has a constant, inlined length then
+        // this calculation ought to happen at compile time too.
+        return this->inner_surface->get_length() / this->get_width();
+    }
+
+    inline typename base_type::index_type map_coordinates(coord_type x, coord_type y) {
+        return (y * WIDTH) + x;
+    }
+
 };
 
 #endif
