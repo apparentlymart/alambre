@@ -1,7 +1,7 @@
 Buses
 =====
 
-In libtenacious terminology, a *bus* is a mechanism for connecting devices
+In alambre terminology, a *bus* is a mechanism for connecting devices
 to the system. Interfaces are included for a few standard buses that are often
 found in embedded systems. Device drivers will often use one or more bus
 interfaces to interact with the corresponding device.

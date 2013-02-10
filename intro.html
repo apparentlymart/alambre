@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Introduction &mdash; libtenacious 0.1 documentation</title>
+    <title>Introduction &mdash; Alambre 0.1 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -26,9 +26,9 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="libtenacious 0.1 documentation" href="index.html" />
+    <link rel="top" title="Alambre 0.1 documentation" href="index.html" />
     <link rel="next" title="Supported Systems" href="systems.html" />
-    <link rel="prev" title="libtenacious" href="index.html" /> 
+    <link rel="prev" title="Alambre" href="index.html" /> 
   </head>
   <body>
     <div class="related">
@@ -41,9 +41,9 @@
           <a href="systems.html" title="Supported Systems"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="index.html" title="libtenacious"
+          <a href="index.html" title="Alambre"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">libtenacious 0.1 documentation</a> &raquo;</li> 
+        <li><a href="index.html">Alambre 0.1 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -54,7 +54,7 @@
             
   <div class="section" id="introduction">
 <h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
-<p>libtenacious is a C++ library for microcontrollers and other embedded systems.
+<p>Alambre is a C++ library for microcontrollers and other embedded systems.
 Its main goal is providing a hardware abstraction allowing drivers to be
 written for a variety of interesting devices and then used across all
 supported platforms. For example, it should be possible to write a driver
@@ -99,7 +99,7 @@ generic functionality of a general-purpose IO pin, and this can be used
 in the driver for a device that requires two GPIO pins:</p>
 <div class="highlight-cpp"><div class="highlight"><pre><span class="k">template</span> <span class="o">&lt;</span><span class="k">class</span> <span class="nc">OUTPUT_PIN_TYPE</span><span class="p">,</span> <span class="k">class</span> <span class="nc">CLOCK_PIN_TYPE</span><span class="o">&gt;</span>
 <span class="k">class</span> <span class="nc">SomeDevice</span> <span class="p">{</span>
-  <span class="k">public</span><span class="o">:</span>
+  <span class="nl">public:</span>
     <span class="n">OUTPUT_PIN_TYPE</span> <span class="o">*</span><span class="n">output_pin</span><span class="p">;</span>
     <span class="n">CLOCK_PIN_TYPE</span> <span class="o">*</span><span class="n">clock_pin</span><span class="p">;</span>
 
@@ -123,12 +123,12 @@ in the driver for a device that requires two GPIO pins:</p>
 </div>
 <p>This can be &#8220;wired up&#8221; to a pair of GPIO pins on an AVR by passing the types
 of the AVR pins as part of the declaration:</p>
-<div class="highlight-cpp"><div class="highlight"><pre><span class="cp">#include &lt;tenacious/system/avr.h&gt;</span>
+<div class="highlight-cpp"><div class="highlight"><pre><span class="cp">#include &lt;alambre/system/avr.h&gt;</span>
 
 <span class="n">SomeDevice</span><span class="o">&lt;</span><span class="n">typeof</span><span class="p">(</span><span class="o">*</span><span class="n">avr_system</span><span class="p">.</span><span class="n">B1</span><span class="p">),</span> <span class="n">typeof</span><span class="p">(</span><span class="o">*</span><span class="n">avr_system</span><span class="p">.</span><span class="n">B2</span><span class="p">)</span><span class="o">&gt;</span>
     <span class="n">my_device</span><span class="p">(</span><span class="n">avr_system</span><span class="p">.</span><span class="n">B1</span><span class="p">,</span> <span class="n">avr_system</span><span class="p">.</span><span class="n">B2</span><span class="p">);</span>
 
-<span class="kt">int</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
     <span class="n">my_device</span><span class="p">.</span><span class="n">do_something</span><span class="p">();</span>
 <span class="p">}</span>
 </pre></div>
@@ -216,7 +216,7 @@ provide a method that can be called to notify it of the state change, like
 this:</p>
 <div class="highlight-cpp"><div class="highlight"><pre><span class="k">template</span> <span class="o">&lt;</span><span class="k">class</span> <span class="nc">INPUT_PIN_TYPE</span><span class="o">&gt;</span>
 <span class="k">class</span> <span class="nc">SomeDevice</span> <span class="p">{</span>
- <span class="k">public</span><span class="o">:</span>
+ <span class="nl">public:</span>
    <span class="n">INPUT_PIN_TYPE</span> <span class="o">*</span><span class="n">input_pin</span><span class="p">;</span>
 
    <span class="n">SomeDevice</span><span class="p">(</span><span class="n">INPUT_PIN_TYPE</span> <span class="o">*</span><span class="n">input_pin</span><span class="p">)</span> <span class="p">{</span>
@@ -234,7 +234,7 @@ this:</p>
 <p>It is then the responsibility of the system-specific wiring code to connect
 whatever event or interrupt signals the input pin change to the notify function.
 For example, on an AVR:</p>
-<div class="highlight-cpp"><div class="highlight"><pre><span class="cp">#include &lt;tenacious/system/avr.h&gt;</span>
+<div class="highlight-cpp"><div class="highlight"><pre><span class="cp">#include &lt;alambre/system/avr.h&gt;</span>
 
 <span class="n">SomeDevice</span><span class="o">&lt;</span><span class="n">typeof</span><span class="p">(</span><span class="o">*</span><span class="n">avr_system</span><span class="p">.</span><span class="n">B1</span><span class="p">)</span><span class="o">&gt;</span>
     <span class="n">my_device</span><span class="p">(</span><span class="n">avr_system</span><span class="p">.</span><span class="n">B1</span><span class="p">);</span>
@@ -291,7 +291,7 @@ and care must be taken when mutating values that cannot be updated atomically.</
 
   <h4>Previous topic</h4>
   <p class="topless"><a href="index.html"
-                        title="previous chapter">libtenacious</a></p>
+                        title="previous chapter">Alambre</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="systems.html"
                         title="next chapter">Supported Systems</a></p>
@@ -327,9 +327,9 @@ and care must be taken when mutating values that cannot be updated atomically.</
           <a href="systems.html" title="Supported Systems"
              >next</a> |</li>
         <li class="right" >
-          <a href="index.html" title="libtenacious"
+          <a href="index.html" title="Alambre"
              >previous</a> |</li>
-        <li><a href="index.html">libtenacious 0.1 documentation</a> &raquo;</li> 
+        <li><a href="index.html">Alambre 0.1 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">

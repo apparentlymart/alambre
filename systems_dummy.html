@@ -1,0 +1,189 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Dummy Systems &mdash; Alambre 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/breathe.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Alambre 0.1 documentation" href="index.html" />
+    <link rel="up" title="Supported Systems" href="systems.html" />
+    <link rel="next" title="Features" href="features.html" />
+    <link rel="prev" title="AVR" href="systems_avr.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="features.html" title="Features"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="systems_avr.html" title="AVR"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Alambre 0.1 documentation</a> &raquo;</li>
+          <li><a href="systems.html" accesskey="U">Supported Systems</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="dummy-systems">
+<h1>Dummy Systems<a class="headerlink" href="#dummy-systems" title="Permalink to this headline">¶</a></h1>
+<p>Some of the systems are provided not for production use but for use as dummies
+during development on a desktop system. These systems provide implementations
+of interfaces normally implemented on devices using facilities that are
+commonly available on a desktop computer.</p>
+<div class="section" id="sdl-dummy-system">
+<h2>SDL Dummy System<a class="headerlink" href="#sdl-dummy-system" title="Permalink to this headline">¶</a></h2>
+<p>The SDL dummy system uses the Simple DirectMedia Layer to provide certain
+capability implementations.</p>
+<p>The SDL system is not included in a build by default. To include it build
+the library with the SDL_DUMMIES=1 parameter, and be sure to include libsdl
+when linking.</p>
+<div class="section" id="d-graphics">
+<h3>2D Graphics<a class="headerlink" href="#d-graphics" title="Permalink to this headline">¶</a></h3>
+<p>The SDL dummy system provides an implementation of the 2D graphics capability
+in terms of SDL video. This can be used to try application code that is
+written in terms of this capability.</p>
+<div class="line-block">
+<div class="line">template &lt; unsigned int WIDTH, unsigned int HEIGHT, unsigned int PIXEL_SCALE = 1 &gt;</div>
+<div class="line"><em>class</em> <strong>WindowedSdl2dGraphicsSurface</strong></div>
+</div>
+<blockquote>
+<div><p>An implementation of the <a class="reference internal" href="features_capabilities.html#project0classIBuffered2dGraphicsSurface"><em>IBuffered2dGraphicsSurface</em></a> interface that renders pixels to an SDL window. </p>
+<p>The SDL window will be created as part of the constructor but it&#8217;s the caller&#8217;s responsibility to run an SDL event loop to keep the window on-screen and updated. </p>
+<em>Public Functions</em><blockquote>
+<div><p id="WindowedSdl2dGraphicsSurface:WIDTH.HEIGHT.PIXEL_SCALE:::WindowedSdl2dGraphicsSurface"><span id="project0classWindowedSdl2dGraphicsSurface_1a0b6d6baf6c97403206c03ce60aa432c3"></span><div class="line-block">
+<div class="line"> <strong>WindowedSdl2dGraphicsSurface</strong>()</div>
+</div>
+</p>
+<blockquote>
+<div><p></p>
+<p></p>
+</div></blockquote>
+</div></blockquote>
+</div></blockquote>
+<div class="line-block">
+<div class="line">template &lt; unsigned int WIDTH, unsigned int HEIGHT, unsigned int PIXEL_SCALE &gt;</div>
+<div class="line"><em>class</em> <strong>InMemorySdl2dGraphicsSurface</strong></div>
+</div>
+<blockquote>
+<div><p>An implementation of the <a class="reference internal" href="features_capabilities.html#project0classIBuffered2dGraphicsSurface"><em>IBuffered2dGraphicsSurface</em></a> interface that renders pixels to an off-screen SDL surface. </p>
+<p>Since this class calls SDL_CreateRGBSurface as part of its constructor it&#8217;s important to be sure to have already called SDL_SetVideoMode before instantiating this. </p>
+<em>Public Functions</em><blockquote>
+<div><p id="InMemorySdl2dGraphicsSurface:WIDTH.HEIGHT.PIXEL_SCALE:::InMemorySdl2dGraphicsSurface"><span id="project0classInMemorySdl2dGraphicsSurface_1a07b3beb97fd5557bc61e42002946d956"></span><div class="line-block">
+<div class="line"> <strong>InMemorySdl2dGraphicsSurface</strong>()</div>
+</div>
+</p>
+<blockquote>
+<div><p></p>
+<p></p>
+</div></blockquote>
+<p id="InMemorySdl2dGraphicsSurface:WIDTH.HEIGHT.PIXEL_SCALE:::~InMemorySdl2dGraphicsSurface"><span id="project0classInMemorySdl2dGraphicsSurface_1a5cd8a02047a27e6ab199e5c3fbd1f46b"></span><div class="line-block">
+<div class="line"> <strong>~InMemorySdl2dGraphicsSurface</strong>()</div>
+</div>
+</p>
+<blockquote>
+<div><p></p>
+<p></p>
+</div></blockquote>
+</div></blockquote>
+</div></blockquote>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Dummy Systems</a><ul>
+<li><a class="reference internal" href="#sdl-dummy-system">SDL Dummy System</a><ul>
+<li><a class="reference internal" href="#d-graphics">2D Graphics</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="systems_avr.html"
+                        title="previous chapter">AVR</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="features.html"
+                        title="next chapter">Features</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/systems_dummy.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="features.html" title="Features"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="systems_avr.html" title="AVR"
+             >previous</a> |</li>
+        <li><a href="index.html">Alambre 0.1 documentation</a> &raquo;</li>
+          <li><a href="systems.html" >Supported Systems</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, Martin Atkins.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

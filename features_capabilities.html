@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Capabilities &mdash; libtenacious 0.1 documentation</title>
+    <title>Capabilities &mdash; Alambre 0.1 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -26,7 +26,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="libtenacious 0.1 documentation" href="index.html" />
+    <link rel="top" title="Alambre 0.1 documentation" href="index.html" />
     <link rel="up" title="Features" href="features.html" />
     <link rel="prev" title="Devices" href="features_devices.html" /> 
   </head>
@@ -40,7 +40,7 @@
         <li class="right" >
           <a href="features_devices.html" title="Devices"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">libtenacious 0.1 documentation</a> &raquo;</li>
+        <li><a href="index.html">Alambre 0.1 documentation</a> &raquo;</li>
           <li><a href="features.html" accesskey="U">Features</a> &raquo;</li> 
       </ul>
     </div>  
@@ -114,6 +114,14 @@ to provide higher-level shape drawing such as line segments and circles.</p>
 <blockquote>
 <div><p>Flip the back-buffer to the front-buffer for the given rectangular region. </p>
 <p>Implementations will update the given region as efficiently as possible. For example, an implementation for display hardware that only supports updating entire lines might ignore the x coordinates but update the range of rows given. </p>
+</div></blockquote>
+<p id="IBuffered2dGraphicsSurface:COORD_TYPE.COLOR_TYPE:::get_closest_color__unsigned-c.unsigned-c.unsigned-c"><span id="project0classIBuffered2dGraphicsSurface_1a971453471db95e76398f728e01306e64"></span><div class="line-block">
+<div class="line">COLOR_TYPE <strong>get_closest_color</strong>(unsigned char r, unsigned char g, unsigned char b)</div>
+</div>
+</p>
+<blockquote>
+<div><p>Get the closest color supported by this surface for the 8-bit-per-channel RGB color given. </p>
+<p>This function only really makes sense for true color displays, and is likely to be unimplemented or implemented in a strange way for implementations that target low-color displays or displays whose colors are intrinsic rather than user-programmable. </p>
 </div></blockquote>
 <p id="IBuffered2dGraphicsSurface:COORD_TYPE.COLOR_TYPE:::get_width"><span id="project0classIBuffered2dGraphicsSurface_1a0c372043fb49782306c2047b1b05f0a4"></span><div class="line-block">
 <div class="line">COORD_TYPE <strong>get_width</strong>()</div>
@@ -253,7 +261,7 @@ to provide higher-level shape drawing such as line segments and circles.</p>
 <div><p>Get the width of the buffer in pixels. </p>
 <p></p>
 </div></blockquote>
-<p id="AbstractBuffered2dGraphicsSurface:WIDTH.HEIGHT.COLOR_TYPE:::flip__unsigned-i.unsigned-i.unsigned-i.unsigned-i"><span id="project0classAbstractBuffered2dGraphicsSurface_1a528e5f702d57ca5dcafaabdce129e3e0"></span><div class="line-block">
+<p id="AbstractBuffered2dGraphicsSurface:WIDTH.HEIGHT.COLOR_TYPE:::flip__unsigned-i.unsigned-i.unsigned-i.unsigned-i"><span id="project0classAbstractBuffered2dGraphicsSurface_1a36e9efaf715d7882e104cec67b39bd10"></span><div class="line-block">
 <div class="line">void <strong>flip</strong>(unsigned int intx1 x1, unsigned int intx2 x2, unsigned int inty1 y1, unsigned int inty2 y2)</div>
 </div>
 </p>
@@ -314,7 +322,7 @@ to provide higher-level shape drawing such as line segments and circles.</p>
         <li class="right" >
           <a href="features_devices.html" title="Devices"
              >previous</a> |</li>
-        <li><a href="index.html">libtenacious 0.1 documentation</a> &raquo;</li>
+        <li><a href="index.html">Alambre 0.1 documentation</a> &raquo;</li>
           <li><a href="features.html" >Features</a> &raquo;</li> 
       </ul>
     </div>
