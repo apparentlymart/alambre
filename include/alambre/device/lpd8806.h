@@ -1,5 +1,5 @@
-#ifndef ALAMBRE_DEVICE_MAX72XX
-#define ALAMBRE_DEVICE_MAX72XX
+#ifndef ALAMBRE_DEVICE_LPD8806
+#define ALAMBRE_DEVICE_LPD8806
 
 #include <stdint.h>
 #include <type_traits>
