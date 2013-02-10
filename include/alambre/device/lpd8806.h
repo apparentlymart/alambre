@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <type_traits>
 #include <alambre/bus/spi.h>
+#include <alambre/capability/1dgraphics.h>
 
 /**
    Device driver for LED strips based on the LPD8806 driver chip.
@@ -88,6 +89,43 @@ class Lpd8806Device {
         for (uint8_t i = 0; i < times; i++) {
             spi_bus->shift_out(0, ISpiBus::MSB_FIRST);
         }
+    }
+
+};
+
+/**
+   IBuffered1dGraphicsSurface capability implementation for LPD8006.
+
+   Provides a straightforward way to buffer the color values in local
+   memory and then refresh a whole strip in one go.
+
+   Note that the LPD8006 updates each pixel as it is completed rather
+   than waiting for the full set to update. Most of the time this isn't
+   a problem because the strip can be updated faster than the human
+   eye can see, but this might be problematic for very long strips.
+ */
+template <class LPD8806_TYPE, unsigned int LENGTH>
+class Lpd8806Buffered1dGraphicsSurface : public AbstractBuffered1dGraphicsSurface<LENGTH, typename LPD8806_TYPE::raw_color> {
+
+    LPD8806_TYPE *device;
+    static const unsigned int NUM_RESETS = (LENGTH / 32) + 1;
+
+  public:
+
+    Lpd8806Buffered1dGraphicsSurface(LPD8806_TYPE *device) {
+        this->device = device;
+        device->transmit_reset(NUM_RESETS);
+    }
+
+    void flip() {
+        for (unsigned int i = 0; i < LENGTH; i++) {
+            device->transmit_color(this->buf[i]);
+        }
+        device->transmit_reset(NUM_RESETS);
+    }
+
+    inline typename LPD8806_TYPE::raw_color get_closest_color(unsigned char r, unsigned char g, unsigned char b) {
+        return this->device->get_closest_color(r, g, b);
     }
 
 };
