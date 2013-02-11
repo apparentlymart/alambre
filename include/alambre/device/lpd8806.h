@@ -2,7 +2,6 @@
 #define ALAMBRE_DEVICE_LPD8806
 
 #include <stdint.h>
-#include <type_traits>
 #include <alambre/bus/spi.h>
 #include <alambre/capability/1dgraphics.h>
 
@@ -19,11 +18,6 @@
  */
 template <class SPI_BUS_TYPE>
 class Lpd8806Device {
-    static_assert(
-        std::is_base_of<ISpiBus, SPI_BUS_TYPE>::value,
-        "SPI_BUS_TYPE must be a subclass of ISpiBus"
-    );
-
     SPI_BUS_TYPE *spi_bus;
 
   public:
