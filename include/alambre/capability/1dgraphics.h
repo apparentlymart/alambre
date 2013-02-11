@@ -159,7 +159,7 @@ class AbstractBuffered2dTo1dGraphicsSurfaceAdapter : public IBuffered2dGraphicsS
         return this->inner_surface->get_pixel(index);
     }
 
-    inline void get_closest_color(unsigned char r, unsigned char g, unsigned char b) {
+    inline color_type get_closest_color(unsigned char r, unsigned char g, unsigned char b) {
         return this->inner_surface->get_closest_color(r, g, b);
     }
 
