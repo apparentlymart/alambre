@@ -163,6 +163,10 @@ class AbstractBuffered2dTo1dGraphicsSurfaceAdapter : public IBuffered2dGraphicsS
         return this->inner_surface->get_closest_color(r, g, b);
     }
 
+    inline void flip(coord_type x1, coord_type y1, coord_type x2, coord_type y2) {
+        this->inner_surface->flip();
+    }
+
 };
 
 /**
