@@ -4,232 +4,312 @@
 #include <stdint.h>
 
 /**
-   Interface for a 2D bitmap supporting pixel set operations and buffer flips.
+   Interface for an immutable 2D bitmap.
 
-   This is an interface intended to be implemented for a 2D display device
-   that can then be used with the Graphics2d template class to perform
-   higher-level graphics operations.
-
-   The coordinate system for all implementations is two-dimensional with
-   each dimension proceeding from zero at the top left. However actual hardware
-   may be mounted at a different orientation than its driver expects, causing
-   the coordinate system to appear rotated.
-
-   The behavior when specifying pixels outside the bounds of the bitmap
-   is undefined, but it should be avoided since it's likely to cause
-   data corruption and possibly crashes on at least some implementations.
+   This interface is ideal for simple wrappers around static bitmaps in
+   the program. For example, a bitmap stored as raw data in an AVR's program
+   memory could be exposed via an implementation of this interface.
  */
-template <typename COORD_TYPE, typename COLOR_TYPE>
-class IBuffered2dGraphicsSurface {
-
- public:
-
-    /**
-       Typedef for the type used for coordinates.
-
-       Exposed here for the benefit of wrapping classes, like Graphics.
-    */
-    typedef COORD_TYPE coord_type;
-
-    /**
-       Typedef for the type used for coordinates.
-
-       Exposed here for the benefit of wrapping classes, like Graphics.
-    */
-    typedef COLOR_TYPE color_type;
-
-    /**
-       Set a particular pixel in the back-buffer to the given color.
-    */
-    void set_pixel(COORD_TYPE x, COORD_TYPE y, COLOR_TYPE color);
-
-
-    /**
-       Get the color of the given pixel in the back-buffer.
-    */
-    COLOR_TYPE get_pixel(COORD_TYPE x, COORD_TYPE y);
-
-    /**
-       Flip the back-buffer to the front-buffer for the given rectangular
-       region.
-
-       Implementations will update the given region as efficiently as possible.
-       For example, an implementation for display hardware that only supports
-       updating entire lines might ignore the x coordinates but update
-       the range of rows given.
-    */
-    void flip(COORD_TYPE x1, COORD_TYPE x2, COORD_TYPE y1, COORD_TYPE y2);
-
-    /**
-       Get the closest color supported by this surface for the
-       8-bit-per-channel RGB color given.
-
-       This function only really makes sense for true color displays,
-       and is likely to be unimplemented or implemented in a strange way
-       for implementations that target low-color displays or displays whose
-       colors are intrinsic rather than user-programmable.
-     */
-    COLOR_TYPE get_closest_color(unsigned char r, unsigned char g, unsigned char b);
-
-    /**
-       Get the width of the buffer in pixels.
-     */
-    COORD_TYPE get_width();
-
-    /**
-       Get the width of the buffer in pixels.
-     */
-    COORD_TYPE get_height();
-};
-
-/**
-   Higher-level graphics utility class.
-
-   Wraps a 2D graphics surface to provide higher-level drawing primitives
-   like line segments and circles.
- */
-template <typename SURFACE_TYPE>
-class Graphics2d {
-
-    SURFACE_TYPE *surface;
-
- public:
-
-    /**
-     * The coordinate type of the underlying graphics surface.
-     */
-    typedef typename SURFACE_TYPE::coord_type coord_type;
-    /**
-     * The color type of the underlying graphics surface.
-     */
-    typedef typename SURFACE_TYPE::color_type color_type;
-
- private:
-    typedef typename SURFACE_TYPE::coord_type COORD_TYPE;
-    typedef typename SURFACE_TYPE::color_type COLOR_TYPE;
-
-    // Keeps track of the rectangular bounds in which we've
-    // drawn since the last time we flipped so that we can
-    // flip only the area we need to.
-    COORD_TYPE inv_x1;
-    COORD_TYPE inv_y1;
-    COORD_TYPE inv_x2;
-    COORD_TYPE inv_y2;
-
-    void update_inv(COORD_TYPE x, COORD_TYPE y) {
-        if (x < inv_x1) inv_x1 = x;
-        if (y < inv_y1) inv_y1 = y;
-        if (x > inv_x2) inv_x2 = x;
-        if (y > inv_y2) inv_y2 = y;
-    }
-
-    void reset_inv() {
-        inv_x1 = this->get_width() - 1;
-        inv_y1 = this->get_height() - 1;
-        inv_x2 = 0;
-        inv_y2 = 0;
-    }
-
- public:
-
-    Graphics2d(SURFACE_TYPE *surface) {
-        this->surface = surface;
-        this->reset_inv();
-    }
-
-    /**
-     * Set the given pixel in the back buffer to the given color.
-     */
-    inline void set_pixel(COORD_TYPE x, COORD_TYPE y, COLOR_TYPE color) {
-        this->surface->set_pixel(x, y, color);
-        this->update_inv(x, y);
-    }
-
-    /**
-     * Get the color of the given pixel from the back buffer.
-     */
-    inline COLOR_TYPE get_pixel(COORD_TYPE x, COORD_TYPE y) {
-        return this->surface->get_pixel(x, y);
-    }
-
-    /**
-     * Set the width of the underlying surface.
-     */
-    inline COORD_TYPE get_width() {
-        return this->surface->get_width();
-    }
-
-    /**
-     * Set the height of the underlying surface.
-     */
-    inline COORD_TYPE get_height() {
-        return this->surface->get_height();
-    }
-
-    /**
-     * Copy to the front-buffer any changes made since the last call to flip.
-     */
-    void flip() {
-        // If we've not actually drawn anything since last time
-        // then our bounds will be "invalid", so do nothing.
-        // (There is an edge case here where if either width or height
-        // is 1 we'll always flip, but that's not worth worrying about.)
-        if (this->inv_x2 <= this->inv_x1) {
-            this->surface->flip(inv_x1, inv_y1, inv_x2, inv_y2);
-            this->reset_inv();
-        }
-    }
-};
-
-/**
-   Abstract class providing a common-case implementation of
-   I2DBufferedGraphicsSurface with an in-memory backbuffer
-   whose maximum size depends on the size of the int type
-   on the target.
-
-   The back-buffer is implemented as a two-dimentional array
-   of the given COLOR_TYPE. This can be appropriate for RGB
-   or other multi-color displays, but may not be best for
-   displays with color formats that require less than one
-   byte per pixel.
-
-   Subclasses of this must implement the flip method
-   taking an explicit rectangle.
- */
-template <unsigned int WIDTH, unsigned int HEIGHT, typename COLOR_TYPE>
-class AbstractBuffered2dGraphicsSurface : public IBuffered2dGraphicsSurface<unsigned int, COLOR_TYPE> {
-
-  protected:
-    /**
-       The back-buffer used for intermediate pixel storage.
-
-       Can be read directly by implementations of flip in subclasses.
-     */
-    COLOR_TYPE buf[HEIGHT][WIDTH];
+template <class COORD_TYPE, class COLOR_TYPE>
+class IBitmap2d {
 
   public:
 
-    inline AbstractBuffered2dGraphicsSurface() {
-        // Nothing to do
-    }
+    /**
+     * The type used for coordinates in this bitmap.
+     *
+     * Since typedefs do not inherit, implementers of this interface must
+     * redefine this.
+     */
+    typedef COORD_TYPE coord_type;
 
-    inline void set_pixel(unsigned int x, unsigned int y, COLOR_TYPE color) {
-        this->buf[y][x] = color;
-    }
+    /**
+     * The type used for colors in this bitmap.
+     *
+     * Since typedefs do not inherit, implementers of this interface must
+     * redefine this.
+     */
+    typedef COLOR_TYPE color_type;
 
-    inline void get_pixel(unsigned int x, unsigned int y) {
-        return this->buf[y][x];
-    }
+    /**
+     * Get the color of the pixel at the given coordinates.
+     */
+    color_type get_pixel(coord_type x, coord_type y);
 
-    inline unsigned int get_width() {
+    /**
+     * Get the width of the bitmap in pixels.
+     */
+    coord_type get_width();
+
+    /**
+     * Get the height of the bitmap in pixels.
+     */
+    coord_type get_height();
+};
+
+/**
+ * Interface for a mutable 2D bitmap.
+ *
+ * This is an extension of IBitmap2d that allows pixel colors to be changed.
+ */
+template <class COORD_TYPE, class COLOR_TYPE>
+class IMutableBitmap2d : public IBitmap2d<COORD_TYPE, COLOR_TYPE> {
+
+  public:
+
+    typedef COORD_TYPE coord_type;
+    typedef COLOR_TYPE color_type;
+
+    /**
+     * Set the color of the pixel at the given coordinates.
+     */
+    void set_pixel(coord_type x, coord_type y, color_type color);
+};
+
+/**
+ * Simple, in-memory 2D bitmap.
+ *
+ * An implementation of IMutableBitmap2d that uses an in-RAM array of
+ * COLOR_TYPE as data storage.
+ */
+template <class COORD_TYPE, class COLOR_TYPE, unsigned int WIDTH, unsigned int HEIGHT>
+class Bitmap2d : public IMutableBitmap2d<COORD_TYPE, COLOR_TYPE> {
+
+    COLOR_TYPE data[HEIGHT][WIDTH];
+
+  public:
+
+    typedef COORD_TYPE coord_type;
+    typedef COLOR_TYPE color_type;
+
+    inline void set_pixel(coord_type x, coord_type y, color_type color) {
+        data[y][x] = color;
+    }
+    inline color_type get_pixel(coord_type x, coord_type y) {
+        return data[y][x];
+    }
+    inline coord_type get_width() {
         return WIDTH;
     }
-
-    inline unsigned int get_height() {
+    inline coord_type get_height() {
         return HEIGHT;
     }
+};
 
-    void flip(unsigned int x1, unsigned int y1, unsigned int x2, unsigned int y2);
+/**
+ * Interface for an immutable 2D bitmap with one bit per pixel.
+ *
+ * This is an extension of IBitmap2d for bitmaps that use one bit per pixel,
+ * with an additional method for accessing an entire byte of pixels at once.
+ *
+ * This interface assumes that the underlying bitmap is packed with horizontal
+ * strips of eight pixels that fall directly on multiples of eight. It's not
+ * appropriate for bit-per-pixel formats with different packing strategies.
+ */
+template <class COORD_TYPE>
+class IBitPerPixelBitmap2d : public IBitmap2d<COORD_TYPE, bool> {
+
+  public:
+
+    typedef COORD_TYPE coord_type;
+    typedef bool color_type;
+
+    /**
+     * Get a horizontal strip of eight pixels as a single bitmask.
+     *
+     * The strip starts at x * 8 pixels and proceeds right for eight pixels.
+     *
+     * For a display that has a compatible data packing strategy in its wire
+     * protocol, reading and transmitting entire bytes will be more
+     * efficient than reading individual pixels and re-packing them into
+     * bytes for transmission.
+     */
+    uint8_t get_pixel_strip(coord_type xbyte, coord_type y);
+};
+
+/**
+ * Interface for a mutable 2D bitmap with one bit per pixel.
+ *
+ * Extends IBitPerPixelBitmap2d with methods for writing entire bytes of
+ * pixels at once.
+ */
+template <class COORD_TYPE>
+class IMutableBitPerPixelBitmap2d : public IMutableBitmap2d<COORD_TYPE, bool>, public IBitPerPixelBitmap2d<COORD_TYPE> {
+  public:
+
+    typedef COORD_TYPE coord_type;
+    typedef bool color_type;
+
+    /**
+     * Write a horizontal strip of eight pixels from a bitmask.
+     */
+    void write_pixel_strip(coord_type xbyte, coord_type y, uint8_t mask);
+    /**
+     * OR a horizontal strip of eight pixels from a bitmask.
+     *
+     * This is useful for drawing new shapes without disturbing the
+     * surrounding pixels.
+     */
+    void or_pixel_strip(coord_type xbyte, coord_type y, uint8_t mask);
+    /**
+     * AND a horizontal strip of eight pixels from a bitmask.
+     *
+     * This is useful for drawing new shapes without disturbing the
+     * surrounding pixels.
+     */
+    void and_pixel_strip(coord_type xbyte, coord_type y, uint8_t mask);
+};
+
+/**
+ * In-memory 2D bitmap with a color palette.
+ *
+ * If the output device is true-color but there are 256 or fewer distinct
+ * colors used for a particular application this class can be used as
+ * an alternative to Bitmap2d to save RAM on the buffer at the expense
+ * of an additional array read per pixel when updating the display.
+ *
+ * Use the COORD_TYPE and COLOR_TYPE of the target display when instantiating
+ * the template. The pixel manipulation functions will actually use a uint8_t
+ * index into the palette to represent color, but then the nested RenderBitmap
+ * type (along with the instance at render_bitmap) can be passed to the
+ * display update method to expose an immutable true-color bitmap for
+ * rendering.
+ */
+template <class COORD_TYPE, class COLOR_TYPE, unsigned int WIDTH, unsigned int HEIGHT, uint8_t PALETTE_SIZE>
+class PaletteBitmap2d : public Bitmap2d<COORD_TYPE, uint8_t, WIDTH, HEIGHT> {
+
+    COLOR_TYPE *palette;
+
+  public:
+
+    typedef COORD_TYPE coord_type;
+    typedef uint8_t color_type;
+
+    /**
+     * The type of colors stored in the palette.
+     *
+     * This is the color type of the render bitmap.
+     */
+    typedef COLOR_TYPE palette_entry_type;
+
+    /**
+     * Immutable true-color view on the bitmap.
+     *
+     * Provides an IBitmap2d-compatible interface to retrieve the true-color
+     * image represented by the underlying image data and palette. This
+     * is the appropriate type to use with the target display so that
+     * the display will see the true colors rather than the palette indices.
+     *
+     * The palette lookups are done on the fly with each call to get_pixel.
+     */
+    class RenderBitmap : IBitmap2d<COORD_TYPE, COLOR_TYPE> {
+
+        typedef PaletteBitmap2d<COORD_TYPE, COLOR_TYPE, WIDTH, HEIGHT, PALETTE_SIZE> real_bitmap_type;
+
+        real_bitmap_type *real_bitmap;
+
+        friend class PaletteBitmap2d<COORD_TYPE, COLOR_TYPE, WIDTH, HEIGHT, PALETTE_SIZE>;
+
+      public:
+
+        typedef COORD_TYPE coord_type;
+        typedef COLOR_TYPE color_type;
+
+        inline COLOR_TYPE get_pixel(coord_type x, coord_type y) {
+            return real_bitmap->get_palette_value(real_bitmap->get_pixel(x, y));
+        }
+
+        inline coord_type get_width() {
+            return WIDTH;
+        }
+
+        inline coord_type get_height() {
+            return HEIGHT;
+        }
+    };
+
+    /**
+     * The render bitmap for this palette bitmap.
+     *
+     * This is just a view on the main bitmap with automatic palette lookup.
+     * There is no additional pixel data stored in here.
+     */
+    RenderBitmap render_bitmap;
+
+    /**
+     * Create a new bitmap with the given palette.
+     *
+     * The pointer must be to an array with at least as many elements as
+     * given in the PALETTE_SIZE template argument.
+     */
+    PaletteBitmap2d(COLOR_TYPE *palette) {
+        this->palette = palette;
+        this->render_bitmap.real_bitmap = this;
+    }
+
+    /**
+     * Get the color in the given index of the palette array.
+     */
+    inline COLOR_TYPE get_palette_value(uint8_t index) {
+        return palette[index];
+    }
+
+    /**
+     * Set the color for the given index of the palette array.
+     */
+    inline void set_palette_value(uint8_t index, color_type color) {
+        palette[index] = color;
+    }
+
+    /**
+     * Determine the size of the palette, as given in the PALETTE_SIZE
+     * template argument.
+     */
+    inline uint8_t get_palette_size() {
+        // Currently we don't do anything with palette size except
+        // expose it here for inspection, but this is intended to let
+        // us make space-optimized implementations of this class in future,
+        // like one that packs two pixels into each byte for when there
+        // are 16 or fewer colors.
+        return PALETTE_SIZE;
+    }
+
+};
+
+/**
+ * Capability interface for displays capable of showing 2D bitmaps.
+ *
+ * It is the caller's responsibility to ensure that the display has the
+ * same pixel data format as the provided bitmap type.
+ */
+template <class BITMAP_TYPE>
+class IBitmap2dDisplay {
+
+  public:
+
+    typedef typename BITMAP_TYPE::coord_type coord_type;
+    typedef typename BITMAP_TYPE::color_type color_type;
+    typedef BITMAP_TYPE bitmap_type;
+
+    /**
+     * Update the display to show the image stored in the given bitmap.
+     */
+    void update(BITMAP_TYPE *bitmap);
+
+    /**
+     * Update the display to show a region of the image stored in the given
+     * bitmap.
+     *
+     * Some implementations may use the given update rectangle to optimize
+     * the display update, but there is no guarantee that other parts of the
+     * display will not also be updated, depending on the update procedure
+     * for the device and the sophistication of the implementation.
+     *
+     * the x1 and y1 coordinates must *always* be less than or equal to the
+     * corresponding x2 and y2; otherwise, the behavior is undefined.
+     */
+    void update(BITMAP_TYPE *bitmap, coord_type x1, coord_type y1, coord_type x2, coord_type y2);
+
 };
 
 #endif
