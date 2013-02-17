@@ -1,3 +1,4 @@
+#ifdef DISABLEDFORNOW
 
 #include "gtest/gtest.h"
 #include <gmock/gmock.h>
@@ -60,3 +61,4 @@ TEST(TestGraphics1d, AdapterFrom2d) {
     ASSERT_EQ(4, surface_2d.get_pixel(2, 3));
 
 }
+#endif

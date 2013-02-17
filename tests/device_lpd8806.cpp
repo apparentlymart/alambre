@@ -1,4 +1,4 @@
-
+/*
 #include "gtest/gtest.h"
 #include <gmock/gmock.h>
 #include "mock/bus.h"
@@ -86,3 +86,4 @@ TEST(TestDeviceLpd8806, Via1dGraphics) {
     short_surface.flip();
 
 }
+*/

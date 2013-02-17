@@ -1,3 +1,4 @@
+#ifdef DISABLEFORNOW
 #ifndef ALAMBRE_CAPABILITY_1DGRAPHICS
 #define ALAMBRE_CAPABILITY_1DGRAPHICS
 
@@ -216,4 +217,5 @@ class RowSlicedBuffered2dTo1dGraphicsSurfaceAdapter : public AbstractBuffered2dT
 
 };
 
+#endif
 #endif
