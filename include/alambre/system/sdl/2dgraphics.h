@@ -13,8 +13,8 @@
    member an SDL surface that is WIDTH * PIXEL_SCALE pixels wide and
    HEIGHT * PIXEL_SCALE pixels tall.
  */
-template <unsigned int WIDTH, unsigned int HEIGHT, unsigned int PIXEL_SCALE>
-class AbstractSdl2dGraphicsSurface : public AbstractBuffered2dGraphicsSurface<WIDTH, HEIGHT, Uint32> {
+template <class BITMAP_TYPE, unsigned int WIDTH, unsigned int HEIGHT, unsigned int PIXEL_SCALE>
+class AbstractSdlBitmap2dDisplay : public IBitmap2dDisplay<BITMAP_TYPE> {
 
   protected:
 
@@ -22,11 +22,15 @@ class AbstractSdl2dGraphicsSurface : public AbstractBuffered2dGraphicsSurface<WI
 
   public:
 
-    AbstractSdl2dGraphicsSurface() {
+    typedef typename BITMAP_TYPE::coord_type coord_type;
+    typedef typename BITMAP_TYPE::color_type color_type;
+    typedef BITMAP_TYPE bitmap_type;
+
+    AbstractSdlBitmap2dDisplay() {
         SdlSystem::initialize(SDL_INIT_VIDEO);
     }
 
-    virtual void flip(unsigned int x1, unsigned int y1, unsigned int x2, unsigned int y2) {
+    virtual void update(BITMAP_TYPE *bitmap, unsigned int x1, unsigned int y1, unsigned int x2, unsigned int y2) {
         SDL_Rect rect;
         rect.w = PIXEL_SCALE;
         rect.h = PIXEL_SCALE;
@@ -37,11 +41,15 @@ class AbstractSdl2dGraphicsSurface : public AbstractBuffered2dGraphicsSurface<WI
                 SDL_FillRect(
                     this->surface,
                     &rect,
-                    this->buf[y][x]
+                    bitmap->get_pixel(x, y)
                 );
                 SDL_Flip(this->surface);
             }
         }
+    }
+
+    virtual void update(BITMAP_TYPE *bitmap) {
+        return this->update(bitmap, 0, 0, WIDTH - 1, HEIGHT - 1);
     }
 
     inline Uint32 get_closest_color(unsigned char r, unsigned char g, unsigned char b) {
@@ -62,15 +70,15 @@ class AbstractSdl2dGraphicsSurface : public AbstractBuffered2dGraphicsSurface<WI
    it's important to be sure to have already called SDL_SetVideoMode before
    instantiating this.
 */
-template <unsigned int WIDTH, unsigned int HEIGHT, unsigned int PIXEL_SCALE>
-class InMemorySdl2dGraphicsSurface : public AbstractSdl2dGraphicsSurface<WIDTH, HEIGHT, PIXEL_SCALE> {
+template <class BITMAP_TYPE, unsigned int WIDTH, unsigned int HEIGHT, unsigned int PIXEL_SCALE>
+class InMemorySdlBitmap2dDisplay : public AbstractSdlBitmap2dDisplay<BITMAP_TYPE, WIDTH, HEIGHT, PIXEL_SCALE> {
 
   public:
 
-    InMemorySdl2dGraphicsSurface() {
+    InMemorySdlBitmap2dDisplay() {
         this->surface = this->create_surface();
     }
-    ~InMemorySdl2dGraphicsSurface() {
+    ~InMemorySdlBitmap2dDisplay() {
         SDL_FreeSurface(this->surface);
     }
 
@@ -99,12 +107,12 @@ class InMemorySdl2dGraphicsSurface : public AbstractSdl2dGraphicsSurface<WIDTH, 
    caller's responsibility to run an SDL event loop to keep the window
    on-screen and updated.
 */
-template <unsigned int WIDTH, unsigned int HEIGHT, unsigned int PIXEL_SCALE=1>
-class WindowedSdl2dGraphicsSurface : public AbstractSdl2dGraphicsSurface<WIDTH, HEIGHT, PIXEL_SCALE> {
+template <class BITMAP_TYPE, unsigned int WIDTH, unsigned int HEIGHT, unsigned int PIXEL_SCALE=1>
+class WindowedSdlBitmap2dDisplay : public AbstractSdlBitmap2dDisplay<BITMAP_TYPE, WIDTH, HEIGHT, PIXEL_SCALE> {
 
   public:
 
-    WindowedSdl2dGraphicsSurface() {
+    WindowedSdlBitmap2dDisplay() {
         this->surface = this->create_surface();
     }
 
