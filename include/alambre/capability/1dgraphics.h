@@ -224,5 +224,28 @@ class RowSlicedMutableBitmap1dAsBitmap2dAdapter : public AbstractMutableBitmap1d
 
 };
 
+
+/**
+ * Capability interface for displays capable of showing 1D bitmaps.
+ *
+ * It is the caller's responsibility to ensure that the display has the
+ * same pixel data format as the provided bitmap type.
+ */
+template <class BITMAP_TYPE>
+class IBitmap1dDisplay {
+
+  public:
+
+    typedef typename BITMAP_TYPE::index_type index_type;
+    typedef typename BITMAP_TYPE::color_type color_type;
+    typedef BITMAP_TYPE bitmap_type;
+
+    /**
+     * Update the display to show the image stored in the given bitmap.
+     */
+    void update(BITMAP_TYPE *bitmap);
+
+};
+
 #endif
 
