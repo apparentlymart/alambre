@@ -5,6 +5,28 @@
 #include <alambre/bus/spi.h>
 #include <alambre/capability/1dgraphics.h>
 
+struct Lpd8806Color {
+
+    uint8_t g;
+    uint8_t r;
+    uint8_t b;
+
+  private:
+
+    constexpr Lpd8806Color(uint8_t r, uint8_t g, uint8_t b) : r(r), g(g), b(b) {}
+
+  public:
+    constexpr Lpd8806Color() : r(0x80), g(0x80), b(0x80) {}
+
+    constexpr static Lpd8806Color get_closest(uint8_t r, uint8_t g, uint8_t b) {
+        return Lpd8806Color((r >> 1) | 0x80, (g >> 1) | 0x80, (b >> 1) | 0x80);
+    }
+
+    constexpr static Lpd8806Color get_raw(uint8_t r, uint8_t g, uint8_t b) {
+        return Lpd8806Color(r, g, b);
+    }
+};
+
 /**
    Device driver for LED strips based on the LPD8806 driver chip.
 
@@ -22,18 +44,8 @@ class Lpd8806Device {
 
   public:
 
-    /**
-       The type used for the raw representation of a color,
-       storing the raw pixel data format of the device.
 
-       Only the lower 7 bits of each are used for color data.
-       The most significant bit must always be set for a valid color.
-     */
-    typedef struct {
-        uint8_t g;
-        uint8_t r;
-        uint8_t b;
-    } raw_color;
+    typedef Lpd8806Color raw_color;
 
     Lpd8806Device(SPI_BUS_TYPE *spi_bus) {
         this->spi_bus = spi_bus;
@@ -46,12 +58,8 @@ class Lpd8806Device {
        We half the color resolution in this process, with the "lost"
        colors being rounded down.
      */
-    raw_color get_closest_color(unsigned char r, unsigned char g, unsigned char b) {
-        raw_color ret;
-        ret.g = (g >> 1) | 0x80;
-        ret.r = (r >> 1) | 0x80;
-        ret.b = (b >> 1) | 0x80;
-        return ret;
+    constexpr static raw_color get_closest_color(unsigned char r, unsigned char g, unsigned char b) {
+        return raw_color::get_closest(r, g, b);
     }
 
     /**
@@ -88,7 +96,7 @@ class Lpd8806Device {
 };
 
 /**
-   IBuffered1dGraphicsSurface capability implementation for LPD8006.
+   IBitmap1dDisplay capability implementation for LPD8006.
 
    Provides a straightforward way to buffer the color values in local
    memory and then refresh a whole strip in one go.
@@ -98,22 +106,26 @@ class Lpd8806Device {
    a problem because the strip can be updated faster than the human
    eye can see, but this might be problematic for very long strips.
  */
-template <class LPD8806_TYPE, unsigned int LENGTH>
-class Lpd8806Buffered1dGraphicsSurface : public AbstractBuffered1dGraphicsSurface<LENGTH, typename LPD8806_TYPE::raw_color> {
+template <class BITMAP_TYPE, class LPD8806_TYPE, uint8_t NUM_RESETS=3>
+class Lpd8806Bitmap1dDisplay : public IBitmap1dDisplay<BITMAP_TYPE> {
 
     LPD8806_TYPE *device;
-    static const unsigned int NUM_RESETS = (LENGTH / 32) + 1;
 
   public:
 
-    Lpd8806Buffered1dGraphicsSurface(LPD8806_TYPE *device) {
+    typedef typename BITMAP_TYPE::index_type index_type;
+    typedef typename BITMAP_TYPE::color_type color_type;
+    typedef BITMAP_TYPE bitmap_type;
+
+    Lpd8806Bitmap1dDisplay(LPD8806_TYPE *device) {
         this->device = device;
         device->transmit_reset(NUM_RESETS);
     }
 
-    void flip() {
-        for (unsigned int i = 0; i < LENGTH; i++) {
-            device->transmit_color(this->buf[i]);
+    void update(BITMAP_TYPE *bitmap) {
+        index_type length = bitmap->get_length();
+        for (index_type i = 0; i < length; i++) {
+            device->transmit_color(bitmap->get_pixel(i));
         }
         device->transmit_reset(NUM_RESETS);
     }

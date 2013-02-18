@@ -3,217 +3,249 @@
 
 #include <alambre/capability/2dgraphics.h>
 
-/**
-   Interface for a 1D bitmap supporting pixel set operations and buffer flips.
+template <class INDEX_TYPE, class COLOR_TYPE>
+class IBitmap1d {
 
-   This is an interface intended to be implemented for a 1-dimensional linear
-   display device (e.g. an LED strip).
-
-   The bitmap is addressed using indices from 0 to one less than the length.
-
-   The behavior when specifying pixels outside the bounds of the bitmap
-   is undefined, but it should be avoided since it's likely to cause
-   data corruption and possibly crashes on at least some implementations.
- */
-template <typename INDEX_TYPE, typename COLOR_TYPE>
-class IBuffered1dGraphicsSurface {
-
- public:
+  public:
 
     /**
-       Typedef for the type used for indices.
-
-       Exposed here for the benefit of wrapping classes.
-    */
+     * The type used for indices in this bitmap.
+     *
+     * Since typedefs do not inherit, implementers of this interface must
+     * redefine this.
+     */
     typedef INDEX_TYPE index_type;
 
     /**
-       Typedef for the type used for coordinates.
-
-       Exposed here for the benefit of wrapping classes.
-    */
+     * The type used for colors in this bitmap.
+     *
+     * Since typedefs do not inherit, implementers of this interface must
+     * redefine this.
+     */
     typedef COLOR_TYPE color_type;
 
     /**
-       Set a particular pixel in the back-buffer to the given color.
-    */
-    void set_pixel(INDEX_TYPE index, COLOR_TYPE color);
-
-    /**
-       Get the color of the given pixel in the back-buffer.
-    */
-    COLOR_TYPE get_pixel(INDEX_TYPE index);
-
-    /**
-       Update the display to match what's in the back-buffer.
-    */
-    void flip();
-
-    /**
-       Get the closest color supported by this surface for the
-       8-bit-per-channel RGB color given.
-
-       This function only really makes sense for true color displays,
-       and is likely to be unimplemented or implemented in a strange way
-       for implementations that target low-color displays or displays whose
-       colors are intrinsic rather than user-programmable.
+     * Get the length of the bitmap in pixels.
      */
-    COLOR_TYPE get_closest_color(unsigned char r, unsigned char g, unsigned char b);
+    color_type get_pixel(index_type index);
 
     /**
-       Get the length of the buffer.
-
-       The largest index supported is (length - 1).
+     * Get the length of the bitmap in pixels.
      */
-    INDEX_TYPE get_length();
+    index_type get_length();
 
 };
 
-/**
-   Abstract class providing a common-case implementation of
-   I1dBufferedGraphicsSurface with an in-memory backbuffer
-   whose maximum size depends on the size of the int type
-   on the target.
-
-   The back-buffer is implemented as an array of the given COLOR_TYPE.
-   This can be appropriate for RGB or other multi-color displays, but
-   may not be best for displays with color formats that require fewer than eight
-   bits per pixel.
-
-   Subclasses of this must implement the flip method.
- */
-template <unsigned int LENGTH, typename COLOR_TYPE>
-class AbstractBuffered1dGraphicsSurface : public IBuffered1dGraphicsSurface<unsigned int, COLOR_TYPE> {
-
-  protected:
-    /**
-       The back-buffer used for intermediate pixel storage.
-
-       Can be read directly by implementations of flip in subclasses.
-     */
-    COLOR_TYPE buf[LENGTH];
+template <class INDEX_TYPE, class COLOR_TYPE>
+class IMutableBitmap1d : public IBitmap1d<INDEX_TYPE, COLOR_TYPE> {
 
   public:
 
-    inline AbstractBuffered1dGraphicsSurface() {
-        // Nothing to do
-    }
+    typedef INDEX_TYPE index_type;
+    typedef COLOR_TYPE color_type;
 
-    inline void set_pixel(unsigned int index, COLOR_TYPE color) {
-        this->buf[index] = color;
-    }
+    void set_pixel(index_type index, color_type color);
 
-    inline void get_pixel(unsigned int index) {
-        return this->buf[index];
-    }
+};
 
-    inline unsigned int get_length() {
+
+template <class INDEX_TYPE, class COLOR_TYPE, unsigned int LENGTH>
+class Bitmap1d : public IMutableBitmap1d<INDEX_TYPE, COLOR_TYPE> {
+
+    COLOR_TYPE data[LENGTH];
+
+  public:
+
+    typedef INDEX_TYPE index_type;
+    typedef COLOR_TYPE color_type;
+
+    inline void set_pixel(index_type index, color_type color) {
+        data[index] = color;
+    }
+    inline color_type get_pixel(index_type index) {
+        return data[index];
+    }
+    inline index_type get_length() {
         return LENGTH;
     }
 
-    void flip();
 };
 
-/**
-   Abstract class mapping the IBuffered2dGraphicsSurface capability to
-   an implementation of IBuffered1dGraphicsSurface.
+template <class INDEX_TYPE, class COLOR_TYPE, unsigned int LENGTH, uint8_t PALETTE_SIZE>
+class PaletteBitmap1d : public Bitmap1d<INDEX_TYPE, uint8_t, LENGTH> {
 
-   This is a generic implementation with no specified mapping from 2D to
-   1D coordinate spaces. Subclasses must implement map_coordinates to
-   map 2D coordinates onto the 1D index space in some way.
-
-   Subclasses must also implement get_width and get_height since only
-   once the projection is defined can one define the rectangular space
-   into which it projects.
- */
-template <class BUFFERED_1D_SURFACE_TYPE, class ADAPTER_TYPE>
-class AbstractBuffered2dTo1dGraphicsSurfaceAdapter : public IBuffered2dGraphicsSurface<typename BUFFERED_1D_SURFACE_TYPE::index_type, typename BUFFERED_1D_SURFACE_TYPE::color_type> {
-
-  protected:
-    BUFFERED_1D_SURFACE_TYPE *inner_surface;
+    COLOR_TYPE *palette;
 
   public:
 
-    typedef BUFFERED_1D_SURFACE_TYPE inner_surface_type;
-    typedef typename inner_surface_type::index_type index_type;
-    typedef index_type coord_type;
-    typedef typename inner_surface_type::color_type color_type;
+    typedef INDEX_TYPE index_type;
+    typedef uint8_t color_type;
 
     /**
-       Take 2D coordinates and return the corresponding 1D index for those
-       coordinates.
-
-       This function provides the "projection" from the 2D coordinate system
-       onto the underlying 1D coordinate system.
+     * The type of colors stored in the palette.
+     *
+     * This is the color type of the render bitmap.
      */
-    index_type map_coordinates(coord_type x, coord_type y);
+    typedef COLOR_TYPE palette_entry_type;
 
-    void set_pixel(coord_type x, coord_type y, color_type color) {
-        index_type index = static_cast<ADAPTER_TYPE*>(this)->map_coordinates(x, y);
-        //index_type index = this->ADAPTER_TYPE::map_coordinates(x, y);
-        this->inner_surface->set_pixel(index, color);
+    /**
+     * Immutable true-color view on the bitmap.
+     *
+     * Provides an IBitmap2d-compatible interface to retrieve the true-color
+     * image represented by the underlying image data and palette. This
+     * is the appropriate type to use with the target display so that
+     * the display will see the true colors rather than the palette indices.
+     *
+     * The palette lookups are done on the fly with each call to get_pixel.
+     */
+    class RenderBitmap : IBitmap1d<INDEX_TYPE, COLOR_TYPE> {
+
+        typedef PaletteBitmap1d<INDEX_TYPE, COLOR_TYPE, LENGTH, PALETTE_SIZE> real_bitmap_type;
+
+        real_bitmap_type *real_bitmap;
+
+        friend class PaletteBitmap1d<INDEX_TYPE, COLOR_TYPE, LENGTH, PALETTE_SIZE>;
+
+      public:
+
+        typedef INDEX_TYPE index_type;
+        typedef COLOR_TYPE color_type;
+
+        inline color_type get_pixel(index_type index) {
+            return real_bitmap->get_palette_value(real_bitmap->get_pixel(index));
+        }
+
+        inline index_type get_length() {
+            return LENGTH;
+        }
+    };
+
+    /**
+     * The render bitmap for this palette bitmap.
+     *
+     * This is just a view on the main bitmap with automatic palette lookup.
+     * There is no additional pixel data stored in here.
+     */
+    RenderBitmap render_bitmap;
+
+    /**
+     * Create a new bitmap with the given palette.
+     *
+     * The pointer must be to an array with at least as many elements as
+     * given in the PALETTE_SIZE template argument.
+     */
+    PaletteBitmap1d(COLOR_TYPE *palette) {
+        this->palette = palette;
+        this->render_bitmap.real_bitmap = this;
     }
 
-    color_type get_pixel(coord_type x, coord_type y) {
-        index_type index = static_cast<ADAPTER_TYPE*>(this)->map_coordinates(x, y);
-        return this->inner_surface->get_pixel(index);
+    /**
+     * Get the color in the given index of the palette array.
+     */
+    inline COLOR_TYPE get_palette_value(uint8_t index) {
+        return palette[index];
     }
 
-    inline color_type get_closest_color(unsigned char r, unsigned char g, unsigned char b) {
-        return this->inner_surface->get_closest_color(r, g, b);
+    /**
+     * Set the color for the given index of the palette array.
+     */
+    inline void set_palette_value(uint8_t index, color_type color) {
+        palette[index] = color;
     }
 
-    inline void flip(coord_type x1, coord_type y1, coord_type x2, coord_type y2) {
-        this->inner_surface->flip();
+    /**
+     * Determine the size of the palette, as given in the PALETTE_SIZE
+     * template argument.
+     */
+    inline uint8_t get_palette_size() {
+        // Currently we don't do anything with palette size except
+        // expose it here for inspection, but this is intended to let
+        // us make space-optimized implementations of this class in future,
+        // like one that packs two pixels into each byte for when there
+        // are 16 or fewer colors.
+        return PALETTE_SIZE;
     }
 
 };
 
-/**
- * Linear, left-to-right, top-to-bottom projection of 2D onto 1D.
- *
- * This implementation of AbstractBuffered2dTo1dGraphicsSurfaceAdapter
- * assumes that the 1D surface is sliced into rows that all go from
- * left to right, and then the rows themselves proceed from top to bottom.
- *
- * The length of the 1D surface should be a multiple of the given WIDTH.
- * If it isn't then the height will be rounded down to the nearest whole row.
- */
-template <class BUFFERED_1D_SURFACE_TYPE, unsigned long WIDTH>
-class RowSlicedBuffered2dTo1dGraphicsSurfaceAdapter : public AbstractBuffered2dTo1dGraphicsSurfaceAdapter<BUFFERED_1D_SURFACE_TYPE, RowSlicedBuffered2dTo1dGraphicsSurfaceAdapter<BUFFERED_1D_SURFACE_TYPE, WIDTH> > {
+template <class BITMAP1D_TYPE, class ADAPTER_TYPE>
+class AbstractMutableBitmap1dAsBitmap2dAdapter : public IMutableBitmap2d<typename BITMAP1D_TYPE::index_type, typename BITMAP1D_TYPE::color_type> {
 
-  private:
-    typedef AbstractBuffered2dTo1dGraphicsSurfaceAdapter<BUFFERED_1D_SURFACE_TYPE, RowSlicedBuffered2dTo1dGraphicsSurfaceAdapter<BUFFERED_1D_SURFACE_TYPE, WIDTH> > base_type;
+  protected:
+    BITMAP1D_TYPE *bitmap1d;
 
   public:
 
-    // Forcefully "inherit" the typedefs from our parent, because
-    // typedefs don't inherit automatically in C++.
-    typedef typename base_type::inner_surface_type inner_surface_type;
-    typedef typename base_type::index_type index_type;
-    typedef typename base_type::coord_type coord_type;
-    typedef typename base_type::color_type color_type;
+    typedef BITMAP1D_TYPE bitmap1d_type;
+    typedef typename BITMAP1D_TYPE::index_type coord_type;
+    typedef typename BITMAP1D_TYPE::index_type index_type;
+    typedef typename BITMAP1D_TYPE::color_type color_type;
 
-    RowSlicedBuffered2dTo1dGraphicsSurfaceAdapter(BUFFERED_1D_SURFACE_TYPE *inner_surface) {
-        this->inner_surface = inner_surface;
+    index_type map_coordinates(coord_type x, coord_type y);
+
+    inline color_type get_pixel(coord_type x, coord_type y) {
+        index_type index = static_cast<ADAPTER_TYPE*>(this)->map_coordinates(x, y);
+        return this->bitmap1d->get_pixel(index);
     }
 
-    inline typename base_type::index_type get_width() {
-        // Since WIDTH is a constant this conversion ought to happen
-        // at compile time.
-        return (typename base_type::index_type)(WIDTH);
+    inline color_type set_pixel(coord_type x, coord_type y, color_type color) {
+        index_type index = static_cast<ADAPTER_TYPE*>(this)->map_coordinates(x, y);
+        this->bitmap1d->set_pixel(index, color);
     }
 
-    inline typename base_type::index_type get_height() {
-        // If the inner surface has a constant, inlined length then
-        // this calculation ought to happen at compile time too.
-        return this->inner_surface->get_length() / this->get_width();
+};
+
+
+template <class BITMAP1D_TYPE, unsigned int WIDTH>
+class RowSlicedMutableBitmap1dAsBitmap2dAdapter : public AbstractMutableBitmap1dAsBitmap2dAdapter<BITMAP1D_TYPE, RowSlicedMutableBitmap1dAsBitmap2dAdapter<BITMAP1D_TYPE, WIDTH> > {
+
+  public:
+
+    typedef BITMAP1D_TYPE bitmap1d_type;
+    typedef typename BITMAP1D_TYPE::index_type coord_type;
+    typedef typename BITMAP1D_TYPE::index_type index_type;
+    typedef typename BITMAP1D_TYPE::color_type color_type;
+
+    RowSlicedMutableBitmap1dAsBitmap2dAdapter(bitmap1d_type *bitmap1d) {
+        this->bitmap1d = bitmap1d;
     }
 
-    inline typename base_type::index_type map_coordinates(coord_type x, coord_type y) {
+    index_type map_coordinates(coord_type x, coord_type y) {
         return (y * WIDTH) + x;
     }
+
+    inline coord_type get_width() {
+        return (coord_type)WIDTH;
+    }
+
+    inline coord_type get_height() {
+        return this->bitmap1d->get_length() / this->get_width();
+    }
+
+};
+
+
+/**
+ * Capability interface for displays capable of showing 1D bitmaps.
+ *
+ * It is the caller's responsibility to ensure that the display has the
+ * same pixel data format as the provided bitmap type.
+ */
+template <class BITMAP_TYPE>
+class IBitmap1dDisplay {
+
+  public:
+
+    typedef typename BITMAP_TYPE::index_type index_type;
+    typedef typename BITMAP_TYPE::color_type color_type;
+    typedef BITMAP_TYPE bitmap_type;
+
+    /**
+     * Update the display to show the image stored in the given bitmap.
+     */
+    void update(BITMAP_TYPE *bitmap);
 
 };
 
 #endif
+

@@ -2,7 +2,9 @@
 #include "gtest/gtest.h"
 #include <gmock/gmock.h>
 #include "mock/bus.h"
+#include "alambre/capability/1dgraphics.h"
 #include "alambre/device/lpd8806.h"
+#include <stdint.h>
 
 using ::testing::InSequence;
 using ::testing::Return;
@@ -12,10 +14,10 @@ TEST(TestDeviceLpd8806, Direct) {
 
     MockSpiBus spi_bus;
     Lpd8806Device<typeof(spi_bus)> strip(&spi_bus);
+    typedef typeof(strip) strip_type;
 
     // Test that color conversions work as expected.
-    Lpd8806Device<typeof(spi_bus)>::raw_color test_color;
-    test_color = strip.get_closest_color(255, 128, 2);
+    constexpr Lpd8806Device<typeof(spi_bus)>::raw_color test_color = strip_type::get_closest_color(255, 128, 2);
     ASSERT_EQ((255 >> 1) | 0x80, test_color.r);
     ASSERT_EQ((128 >> 1) | 0x80, test_color.g);
     ASSERT_EQ((2 >> 1) | 0x80, test_color.b);
@@ -42,13 +44,16 @@ TEST(TestDeviceLpd8806, Via1dGraphics) {
 
     MockSpiBus spi_bus;
     Lpd8806Device<typeof(spi_bus)> strip(&spi_bus);
+    typedef typeof(strip) strip_type;
 
-    // Resets during construction (2 for long_surface, 1 for short_surface)
+    Bitmap1d<uint8_t, strip_type::raw_color, 4> bitmap;
+
+    // Reset during construction (3 because we're using the default)
     EXPECT_CALL(spi_bus, shift_out('\0', ISpiBus::MSB_FIRST));
     EXPECT_CALL(spi_bus, shift_out('\0', ISpiBus::MSB_FIRST));
     EXPECT_CALL(spi_bus, shift_out('\0', ISpiBus::MSB_FIRST));
 
-    // Shifting out the four pixels of short_surface
+    // Shifting out the four pixels of the bitmap
     // (remember that the channels are transmitted in GRB order)
     // red
     EXPECT_CALL(spi_bus, shift_out(0x80, ISpiBus::MSB_FIRST));
@@ -67,22 +72,23 @@ TEST(TestDeviceLpd8806, Via1dGraphics) {
     EXPECT_CALL(spi_bus, shift_out(0xff, ISpiBus::MSB_FIRST));
     EXPECT_CALL(spi_bus, shift_out(0xff, ISpiBus::MSB_FIRST));
 
-    // and then one more reset on short_surface to latch the last pixel
+    // and then three more resets to latch the last pixel
+    EXPECT_CALL(spi_bus, shift_out('\0', ISpiBus::MSB_FIRST));
+    EXPECT_CALL(spi_bus, shift_out('\0', ISpiBus::MSB_FIRST));
     EXPECT_CALL(spi_bus, shift_out('\0', ISpiBus::MSB_FIRST));
 
-    Lpd8806Buffered1dGraphicsSurface<typeof(strip), 63> long_surface(&strip);
-    Lpd8806Buffered1dGraphicsSurface<typeof(strip), 4> short_surface(&strip);
+    Lpd8806Bitmap1dDisplay<typeof(bitmap), typeof(strip)> display(&strip);
 
-    auto red = short_surface.get_closest_color(255, 0, 0);
-    auto yellow = short_surface.get_closest_color(255, 255, 0);
-    auto blue = short_surface.get_closest_color(0, 0, 255);
-    auto white = short_surface.get_closest_color(255, 255, 255);
+    constexpr auto red = strip.get_closest_color(255, 0, 0);
+    constexpr auto yellow = strip.get_closest_color(255, 255, 0);
+    constexpr auto blue = strip.get_closest_color(0, 0, 255);
+    constexpr auto white = strip.get_closest_color(255, 255, 255);
 
-    short_surface.set_pixel(0, red);
-    short_surface.set_pixel(1, yellow);
-    short_surface.set_pixel(2, blue);
-    short_surface.set_pixel(3, white);
+    bitmap.set_pixel(0, red);
+    bitmap.set_pixel(1, yellow);
+    bitmap.set_pixel(2, blue);
+    bitmap.set_pixel(3, white);
 
-    short_surface.flip();
+    display.update(&bitmap);
 
 }

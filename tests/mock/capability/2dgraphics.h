@@ -4,7 +4,7 @@
 #include <gmock/gmock.h>
 #include <alambre/capability/2dgraphics.h>
 
-class MockBuffered2dGraphicsSurface : public IBuffered2dGraphicsSurface<unsigned int, unsigned char> {
+/*class MockBuffered2dGraphicsSurface : public IBuffered2dGraphicsSurface<unsigned int, unsigned char> {
 
  public:
     MOCK_METHOD3(set_pixel, void(unsigned int, unsigned int, unsigned char));
@@ -29,6 +29,6 @@ class FakeBuffered2dGraphicsSurface : public AbstractBuffered2dGraphicsSurface<W
         }
     }
 
-};
+    };*/
 
 #endif
