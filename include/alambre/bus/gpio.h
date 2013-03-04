@@ -95,7 +95,7 @@ class FakeGpioPin : IGpioPin {
         this->value = IGpioPin::HIGH;
     }
     inline void clear(void) {
-        this->value = IGpioPin::HIGH;
+        this->value = IGpioPin::LOW;
     }
     inline void write(IGpioPin::PinValue value) {
         this->value = value;
