@@ -113,4 +113,36 @@ class FakeGpioPin : IGpioPin {
 
 };
 
+
+/**
+ * A do-nothing GPIO pin implementation.
+ *
+ * This is an implementation of the GPIO pin interface that does absolutely
+ * nothing. This can be used as a placeholder when a driver requires a GPIO
+ * pin instance but the current application doesn't demand one.
+ *
+ * For example, this can be useful to provide as the input pin to the software
+ * SPI implementation for applications that only need to transmit data.
+ */
+template <IGpioPin::PinValue VALUE=IGpioPin::LOW, IGpioPin::PinDirection DIRECTION=IGpioPin::OUTPUT>
+class NullGpioPin : public IGpioPin {
+
+  public:
+
+    inline constexpr void set(void) {}
+    inline constexpr void clear(void) {}
+    inline constexpr void write(IGpioPin::PinValue value) {}
+    inline constexpr IGpioPin::PinValue read(void) {
+        return VALUE;
+    }
+
+    inline constexpr void set_direction(IGpioPin::PinDirection direction) {}
+    inline constexpr IGpioPin::PinDirection get_direction (void) {
+        return DIRECTION;
+    }
+};
+
+constexpr NullGpioPin<> null_gpio_pin;
+typedef decltype(null_gpio_pin) null_gpio_pin_t;
+
 #endif

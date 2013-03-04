@@ -25,3 +25,19 @@ TEST(TestGpio, FakeGpioPin) {
 
 }
 
+TEST(TestGpio, NullGpioPin) {
+
+    // The default null_gpio_pin instance is LOW and OUTPUT
+    ASSERT_EQ(IGpioPin::LOW, null_gpio_pin.read());
+    ASSERT_EQ(IGpioPin::OUTPUT, null_gpio_pin.get_direction());
+
+    NullGpioPin<IGpioPin::HIGH> high_null_pin;
+    ASSERT_EQ(IGpioPin::HIGH, high_null_pin.read());
+    ASSERT_EQ(IGpioPin::OUTPUT, high_null_pin.get_direction());
+
+    NullGpioPin<IGpioPin::HIGH, IGpioPin::INPUT> high_input_null_pin;
+    ASSERT_EQ(IGpioPin::HIGH, high_input_null_pin.read());
+    ASSERT_EQ(IGpioPin::INPUT, high_input_null_pin.get_direction());
+
+}
+
