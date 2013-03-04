@@ -249,3 +249,74 @@ The rules for this pattern are as follows:
 * Any variables that can be modified by the notify method must be declared
   `volatile` to let the compiler know they can be modified by asynchronous code,
   and care must be taken when mutating values that cannot be updated atomically.
+
+The Debug Stream
+----------------
+
+As an aid to debugging programs, Alambre provides a *debug stream* feature
+that allows code to produce messages that aid in debugging, but to allow these
+messages to be globally enabled and disabled in one place to allow easy
+switching between debug and non-debug builds.
+
+Enabling the Debug Stream
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+By default the debug stream is completely disabled and any code writing to it
+is completely stripped out at compile time.
+
+To enable the debug stream, include the ``alambre/debugstream.h`` header and
+then use the ``ENABLE_DEBUG_STREAM`` preprocessor macro to turn it on and define
+how debug messages will be handled. Here's an example that writes debug
+messages to ``stderr``, assuming that the target platform has a concept of
+standard I/O streams.
+
+.. code-block:: cpp
+
+    #include <alambre/debugstream.h>
+    #include <stdio.h>
+
+    ENABLE_DEBUG_STREAM {
+        // "msg" in this block is always a const char * pointing to a
+        // message to append to the debug stream.
+        fputs(msg, stderr);
+
+        // On a microcontroller with no natural stderr you might instead
+        // write to a serial port or an LCD.
+    }
+
+The debug stream feature uses *template specialization* in order to customize
+the output function, so if your program consists of multiple separate
+compilation units it's important to ensure that the ``ENABLE_DEBUG_STREAM``
+macro is used in all modules that will write to the debug stream, for example
+by placing this declaration in a header file that is included in all of the
+necessary source files.
+
+Writing to the Debug Stream
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The debug stream mimicks (but does not completely implement) the "iostream"
+interface from the C++ standard library, in particular its use of overloading
+the ``<<`` operator to append to the stream.
+
+.. code-block:: cpp
+
+    #include <alambre/debugstream.h>
+
+    int main() {
+        debug_stream << "Hello, world!\n";
+    }
+
+The ``<<`` operator excepts many (but not all) primitive types along with
+C-style strings. Any type will be accepted but those without special support
+will be output as a string of the form ``<unknown 0x1c2f>`` where the hex
+number is the memory address of the value.
+
+Unless the debug stream has previously been enabled, uses of the ``<<``
+operator on ``debug_stream`` are completely removed at compile time, leaving no
+run-time overhead.
+
+However, when the debug stream is enabled such calls can add considerable
+bloat to the program, particular when using types whose rendering is implemented
+using ``sprintf`` (integers, floats, pointers). Care must be taken when using
+this feature on systems with small program memory.
+
