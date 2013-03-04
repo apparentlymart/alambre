@@ -6,6 +6,7 @@
 #endif
 
 #include <alambre/system/linux/gpio.h>
+#include <alambre/system/linux/spi.h>
 
 /**
  * System targeting the Linux user-space GPIO, SPI and I2C interfaces.

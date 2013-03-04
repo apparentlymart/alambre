@@ -19,3 +19,9 @@ GPIO
 ----
 
 .. doxygenfile:: include/alambre/system/linux/gpio.h
+
+SPI
+---
+
+.. doxygenfile:: include/alambre/system/linux/spi.h
+
