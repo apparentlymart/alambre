@@ -1,3 +1,5 @@
+#ifndef ALAMBRE_SCANNER_HPP
+#define ALAMBRE_SCANNER_HPP
 
 #include <boost/config/warning_disable.hpp>
 #include <boost/spirit/include/lex_lexertl.hpp>
@@ -525,3 +527,5 @@ struct alaLexer : lex::lexer<Lexer> {
     }
 
 };
+
+#endif
